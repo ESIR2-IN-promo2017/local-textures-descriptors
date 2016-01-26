@@ -1,6 +1,6 @@
 CC=g++
 LIBS= -lopencv_core -lopencv_highgui
-FLAGS= -std=c++14 -Wall -pedantic
+FLAGS= -std=c++11 -Wall -pedantic
 PROJECT_NAME=local-texture-descriptors.out
 
 objects=main.o
