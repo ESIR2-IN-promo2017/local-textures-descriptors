@@ -1,0 +1,7 @@
+#precompiled files
+*.out
+*.exe
+*.o
+
+#temp files
+*.swp
