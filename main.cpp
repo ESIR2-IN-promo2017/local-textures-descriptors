@@ -9,8 +9,9 @@ int main( int argc, char** argv )
 {
     if( argc != 2)
     {
-     cout <<" Usage: display_image ImageToLoadAndDisplay" << endl;
-     return -1;
+        //incorrect arguments : help message
+        cout <<" Usage: " << argv[0] << " <image>" << endl; //argv[0] contains the name of the program
+        return -1;
     }
 
     Mat image;
