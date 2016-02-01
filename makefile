@@ -1,9 +1,9 @@
 CC=g++
-LIBS= -lopencv_core -lopencv_highgui
+LIBS= -lopencv_core -lopencv_imgproc -lopencv_highgui
 FLAGS= -std=c++11 -Wall -pedantic
 PROJECT_NAME=local-texture-descriptors.out
 
-objects=main.o
+objects=main.o textureDescriptor.o
 
 all: $(objects)
 	$(CC) -o $(PROJECT_NAME) $^ $(LIBS)
