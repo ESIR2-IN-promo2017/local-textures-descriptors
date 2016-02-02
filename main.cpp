@@ -27,10 +27,11 @@ int main( int argc, char** argv )
     }
 
 
-
+    Mat imageLAB;
+    cvtColor(image, imageLAB, CV_BGR2Lab);
 
     // Array of 8 matrix
-	std::array<cv::Mat, 8> vecteur(Z(image));
+	std::array<cv::Mat, 8> vecteur(Z(imageLAB));
 
 
 
