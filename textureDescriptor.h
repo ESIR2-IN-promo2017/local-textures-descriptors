@@ -14,3 +14,13 @@
  * @return le vecteur [ L(p) a(p) b(p) |dL(p)/dx| |dL(p)/dy| |d²L(p)/dx²| |d²L(p)/dy²| |d²L(p)/dxdy| ]
  */
 std::array<cv::Mat, 8> Z(cv::Mat const& img);
+
+
+/**
+* @brief calcule la matrice des distances du patch
+*
+* @param r: taille du patch 2*r+1
+*
+* @return matrice Wr(p,q)=exp(-(||p-q||²/2*sigma²))
+*/
+cv::Mat Wr(int r);
