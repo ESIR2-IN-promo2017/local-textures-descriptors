@@ -25,6 +25,15 @@ std::array<cv::Mat, 8> Z(cv::Mat const& img);
 cv::Mat Wr(int r);
 
 /**
+ * @brief calcule le facteur de normalisation associé à la matrice de coefficients
+ *
+ * @param Wr: la matrice de coefficients du patch
+ *
+ * @return 1/(somme des coefficients de Wr)
+ */
+inline double beta(cv::Mat const& Wr);
+
+/**
  * @brief recupere le vecteur de paramètre z(q) pour un pixel
  *
  * @param Z: le vecteur de paramètres de toute l'image (cf Z(cv::Mat))

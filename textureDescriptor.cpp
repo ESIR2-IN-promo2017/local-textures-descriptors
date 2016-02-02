@@ -52,6 +52,12 @@ cv::Mat Wr(int r)
     return Wr/Z;
 }
 
+inline double beta(cv::Mat const& Wr)
+{
+    //sum(Wr) is Scalar, and sum(Wr)[0] is the real part
+    return 1/(double)sum(Wr)[0];
+}
+
 inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z,
         unsigned int const i,
         unsigned int const j)
