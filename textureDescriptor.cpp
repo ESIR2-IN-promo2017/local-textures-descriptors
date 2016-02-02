@@ -35,6 +35,23 @@ std::array<cv::Mat, 8> Z(cv::Mat const& img)
     return z;
 }
 
+cv::Mat Wr(int r)
+{
+    int sizePatch = 2 * r + 1;
+    cv::Mat Wr(sizePatch, sizePatch, CV_64F);
+    double sigma_carre = pow(r / 3, 2);
+    double Z = 0.0;
+    for (int i = -r; i <= r; i++) {
+        for (int j = -r; j <= r; j++) {
+            double dist_pq = pow((double)sqrt(i*i + j*j), 2);
+            double w = exp(-(dist_pq) / (2.0 * sigma_carre));
+            Wr.at<double>(i + r, j + r) = w;
+            Z += w;
+        }
+    }
+    return Wr/Z;
+}
+
 inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z,
         unsigned int const i,
         unsigned int const j)

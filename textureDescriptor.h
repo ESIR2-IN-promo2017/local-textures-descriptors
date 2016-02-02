@@ -16,6 +16,15 @@
 std::array<cv::Mat, 8> Z(cv::Mat const& img);
 
 /**
+* @brief calcule la matrice des distances du patch
+*
+* @param r: taille du patch 2*r+1
+*
+* @return matrice Wr(p,q)=exp(-(||p-q||²/2*sigma²))
+*/
+cv::Mat Wr(int r);
+
+/**
  * @brief recupere le vecteur de paramètre z(q) pour un pixel
  *
  * @param Z: le vecteur de paramètres de toute l'image (cf Z(cv::Mat))
