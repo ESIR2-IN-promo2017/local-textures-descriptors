@@ -1,6 +1,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <vector>
 #include "textureDescriptor.h"
 
 using namespace cv;
@@ -35,6 +36,24 @@ int main( int argc, char** argv )
 
 
 
+    // Appel Crp
+    unsigned int r = 3;
+    Mat wr = Wr((int)r);
+    double b = beta(wr);
+    std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
+
+
+    // Afficher 1er descripteur
+    cout << "1er descripteur" << endl;
+    for(unsigned int i=0;i<r; i++) {
+        for(unsigned int j=0; j<r; j++){
+            cout << " " << (int) crp[0][10].at<char>(i,j) << " ";
+        }
+        cout << endl;
+    }
+
+
+/*
 	int indexPeriod = name.find_last_of('.');
 	string nameOutFiles(name.substr(0, indexPeriod));
 	nameOutFiles += "_0" + name.substr(indexPeriod);
@@ -44,7 +63,7 @@ int main( int argc, char** argv )
 		nameOutFiles[indexPeriod+1] = (i+'0');
 		cv::imwrite(nameOutFiles, vecteur[i]);
 
-	}
+	}*/
 
     return 0;
 }
