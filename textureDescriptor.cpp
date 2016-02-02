@@ -13,9 +13,10 @@ std::array<cv::Mat, 8> Z(cv::Mat const& img)
 
     cv::Scharr(L, dLdx, CV_64F, 1, 0);
     cv::Scharr(L, dLdy, CV_64F, 0, 1);
-    cv::Scharr(L, d2Ldx2, CV_64F, 2, 0);
-    cv::Scharr(L, d2Ldy2, CV_64F, 0, 2);
-    cv::Scharr(L, d2Ldxdy, CV_64F, 1, 1);
+    cv::Scharr(dLdx, d2Ldx2, CV_64F, 1, 0);
+    cv::Scharr(dLdy, d2Ldy2, CV_64F, 0, 1);
+    // Triggers an assertion
+    //cv::Scharr(L, d2Ldxdy, CV_64F, 1, 1);
 
     z[0] = abs(L);
     z[1] = abs(a);

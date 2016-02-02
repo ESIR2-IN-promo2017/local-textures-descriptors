@@ -1,6 +1,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include "textureDescriptor.h"
 
 using namespace cv;
 using namespace std;
@@ -14,8 +15,10 @@ int main( int argc, char** argv )
         return -1;
     }
 
+    string name(argv[1]);
+
     Mat image;
-    image = imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file
+    image = imread(name, CV_LOAD_IMAGE_COLOR);   // Read the file
 
     if(! image.data )                              // Check for invalid input
     {
@@ -23,9 +26,24 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window", image );                   // Show our image inside it.
 
-    waitKey(0);                                          // Wait for a keystroke in the window
+
+
+    // Array of 8 matrix
+	std::array<cv::Mat, 8> vecteur(Z(image));
+
+
+
+	int indexPeriod = name.find_last_of('.');
+	string nameOutFiles(name.substr(0, indexPeriod));
+	nameOutFiles += "_0" + name.substr(indexPeriod);
+
+	// Write 8 matrix
+	for(int i=0; i<8; i++) {
+		nameOutFiles[indexPeriod+1] = (i+'0');
+		cv::imwrite(nameOutFiles, vecteur[i]);
+
+	}
+
     return 0;
 }
