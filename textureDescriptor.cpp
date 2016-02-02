@@ -1,4 +1,9 @@
-#include "textureDescriptor.h"
+//#include "textureDescriptor.h"
+
+#include <iostream>
+#include <array>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 std::array<cv::Mat, 8> Z(cv::Mat const& img)
 {
@@ -28,4 +33,72 @@ std::array<cv::Mat, 8> Z(cv::Mat const& img)
     z[7] = abs(d2Ldxdy);
 
     return z;
+}
+
+inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z,
+        unsigned int const i,
+        unsigned int const j)
+{
+    cv::Mat Zq(8,1, CV_64F);
+    for(unsigned int ii = 0; ii < 8; ++ii)
+        Zq.at<double>(ii) = Z[ii].at<double>(i,j);
+
+    return Zq;
+}
+
+inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
+        cv::Mat const& Wr,
+        double const& beta,
+        unsigned int const r,
+        unsigned int const i,
+        unsigned int const j)
+{
+    cv::Mat mu(8,1, CV_64F);
+
+    //mu = beta * sum[q in N] ( Wr(p,q) * z(q) )
+
+    for(unsigned int qi = 0; qi < 2*r+1; ++qi)
+        for(unsigned int qj = 0; qj < 2*r+1; ++qi)
+        {
+            //qi in [0, 2r+1[ (therefore qi in patch width)
+            //so qi-r in [-r, r]
+            mu += Wr.at<double>(qi, qj)*Zq(Z, i + qi-r, j + qj-r);
+        }
+
+    mu *= beta;
+
+    return mu;
+}
+
+std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, double beta, unsigned int r)
+{
+    cv::Size imgSize = Z[0].size();
+
+    std::vector<std::vector<cv::Mat> > Crp_vector;
+
+    //TODO: edge gestion
+    for(unsigned int i = r; i < imgSize.height - r; ++i)
+    {
+        std::vector<cv::Mat> Crp_vector_ligne;
+        for(unsigned int j = r; j < imgSize.width - r; ++j)
+        {
+            cv::Mat mu = MUr(Z, Wr, beta, r, i, j);
+
+            cv::Mat Crp = cv::Mat::zeros(8,8, CV_64F);
+
+            for(unsigned int qi = 0; qi < 2*r+1; ++qi)
+                for(unsigned int qj = 0; qj < 2*r+1; ++qj)
+                {
+                    cv::Mat zq = Zq(Z, i + qi-r, j + qj-r);
+                    Crp += (zq*zq.t())*(Wr.at<double>(qi,qj));
+                }
+
+            Crp *= beta;
+
+            Crp_vector_ligne.push_back(Crp);
+        }
+        Crp_vector.push_back(Crp_vector_ligne);
+    }
+
+    return Crp_vector;
 }
