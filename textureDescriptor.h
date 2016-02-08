@@ -5,6 +5,28 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+//TODO: gestion des bords
+
+/*
+ * types de gestion des bords (cf doc openCV) :
+ *
+ *> Various border types, image boundaries are denoted with '|'
+ *
+ *> BORDER_REPLICATE:     aaaaaa|abcdefgh|hhhhhhh
+ *> BORDER_REFLECT:       fedcba|abcdefgh|hgfedcb
+ *> BORDER_REFLECT_101:   gfedcb|abcdefgh|gfedcba
+ *> BORDER_WRAP:          cdefgh|abcdefgh|abcdefg
+ *> BORDER_CONSTANT:      iiiiii|abcdefgh|iiiiiii  with some specified 'i'
+ */
+
+/**
+ * @brief Calculates upper triangular matrix S, where A is a symmetrical matrix A=S*S'
+ *
+ * @param A: la matrice à décomposer
+ * @param S: une matrice dans laquelle insérer le résultat
+ */
+static void Cholesky(cv::Mat const& A, cv::Mat & S);
+
 /**
  * @brief calcule le vecteur de paramètres pour l'image
  *

@@ -2,8 +2,48 @@
 
 #include <iostream>
 #include <array>
+#include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+template<typename T>
+T max(T const& a, T const& b)
+{
+    return (a > b)? a : b;
+}
+
+static void Cholesky( const cv::Mat& A, cv::Mat& S )
+{
+    CV_Assert(A.type() == CV_32F);
+    int dim = A.rows;
+    S.create(dim, dim, CV_32F);
+
+    for(int i = 0; i < dim; i++ )
+    {
+        for(int j = 0; j < i; j++ )
+            S.at<float>(i,j) = 0.f;
+
+        float sum = 0.f;
+        for(int k = 0; k < i; k++ )
+        {
+            float val = S.at<float>(k,i);
+            sum += val*val;
+        }
+
+        S.at<float>(i,i) = sqrt(max(A.at<float>(i,i) - sum, 0.f));
+        float ival = 1.f/S.at<float>(i, i);
+
+        for(int j = i + 1; j < dim; j++ )
+        {
+            sum = 0;
+            for(int k = 0; k < i; k++ )
+                sum += S.at<float>(k, i) * S.at<float>(k, j);
+
+            S.at<float>(i, j) = (A.at<float>(i, j) - sum)*ival;
+        }
+    }
+    transpose(S,S);
+}
 
 std::array<cv::Mat, 8> Z(cv::Mat const& img)
 {
