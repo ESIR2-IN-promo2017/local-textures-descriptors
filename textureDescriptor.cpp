@@ -79,7 +79,7 @@ cv::Mat Wr(int r)
 {
     int sizePatch = 2 * r + 1;
     cv::Mat Wr(sizePatch, sizePatch, CV_64F);
-    double sigma_carre = pow(r / 3, 2);
+    double sigma_carre = pow((double)r / 3.0, 2);
     double Z = 0.0;
     for (int i = -r; i <= r; i++) {
         for (int j = -r; j <= r; j++) {
@@ -92,7 +92,7 @@ cv::Mat Wr(int r)
     return Wr/Z;
 }
 
-inline double beta(cv::Mat const& Wr)
+double beta(cv::Mat const& Wr)
 {
     //sum(Wr) is Scalar, and sum(Wr)[0] is the real part
     return 1/(double)sum(Wr)[0];
@@ -121,7 +121,7 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
     //mu = beta * sum[q in N] ( Wr(p,q) * z(q) )
 
     for(unsigned int qi = 0; qi < 2*r+1; ++qi)
-        for(unsigned int qj = 0; qj < 2*r+1; ++qi)
+        for(unsigned int qj = 0; qj < 2*r+1; ++qj)
         {
             //qi in [0, 2r+1[ (therefore qi in patch width)
             //so qi-r in [-r, r]
@@ -133,8 +133,13 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
     return mu;
 }
 
-std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, double beta, unsigned int r)
+std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, double const& beta, unsigned int r)
 {
+    std::cout << "Z : " << Z[0].at<double>(0,0) << std::endl;
+    std::cout << "Wr : " << Wr.at<double>(0,0) << std::endl;
+    std::cout << "beta : " << beta << std::endl;
+    std::cout << "r : " << r << std::endl;
+
     cv::Size imgSize = Z[0].size();
 
     std::vector<std::vector<cv::Mat> > Crp_vector;
@@ -155,6 +160,8 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
                     cv::Mat zq = Zq(Z, i + qi-r, j + qj-r);
                     Crp += (zq*zq.t())*(Wr.at<double>(qi,qj));
                 }
+
+            //std::cout << Crp.at<double>(0, 0) << std::endl;
 
             Crp *= beta;
 

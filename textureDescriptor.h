@@ -53,7 +53,7 @@ cv::Mat Wr(int r);
  *
  * @return 1/(somme des coefficients de Wr)
  */
-inline double beta(cv::Mat const& Wr);
+double beta(cv::Mat const& Wr);
 
 /**
  * @brief recupere le vecteur de paramètre z(q) pour un pixel
