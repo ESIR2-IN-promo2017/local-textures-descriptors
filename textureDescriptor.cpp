@@ -152,8 +152,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
         for(unsigned int j = r; j < imgSize.width - r; ++j)
         {
             cv::Mat mu = MUr(Z, Wr, beta, r, i, j);
-            std::cout << std::fixed << std::setprecision(2);
-            std::cout << mu << std::endl;
+            //std::cout << mu << std::endl;
 
             cv::Mat Crp = cv::Mat::zeros(8,8, CV_64F);
 

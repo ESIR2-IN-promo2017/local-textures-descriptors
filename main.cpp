@@ -10,6 +10,9 @@
 using namespace cv;
 using namespace std;
 
+
+void test_mat3x3();
+
 int main( int argc, char** argv )
 {
     if( argc != 2)
@@ -29,7 +32,7 @@ int main( int argc, char** argv )
         cout <<  "Could not open or find the image" << std::endl ;
         return -1;
     }
-/*
+
 
     Mat imageLAB;
     cvtColor(image, imageLAB, CV_BGR2Lab);
@@ -40,8 +43,14 @@ int main( int argc, char** argv )
 
 
     // Appel Crp
-    unsigned int r = 3;
+    unsigned int r = 1; //3
     Mat wr = Wr((int)r);
+
+    for(int i=0;i<r;i++) {
+        for(int j=0;j<r;j++) {
+            wr.at<double>(i,j) = 1;
+        }
+    }
     double b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
 
@@ -53,29 +62,34 @@ int main( int argc, char** argv )
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
     for(unsigned int i=0;i<8; i++) {
         for(unsigned int j=0; j<8; j++){
-            cout << " " << (int) crp[xTmp][yTmp].at<char>(i,j) << "\t";
+            cout << " " << crp[xTmp][yTmp].at<double>(i,j) << "\t";
         }
         cout << endl;
     }
 
     xTmp = 80;
-    yTmp = 81;
+    yTmp = 83;
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
     for(unsigned int i=0;i<8; i++) {
         for(unsigned int j=0; j<8; j++){
-            cout << " " << (int) crp[xTmp][yTmp].at<char>(i,j) << "\t";
+            cout << " " << crp[xTmp][yTmp].at<double>(i,j) << "\t";
         }
         cout << endl;
     }
 
-    Mat test;
+
+    Mat test, test2;
     //crp[80][80].at<double>(2,2) /= (double)std::numeric_limits<double>::max();
     applyColorMap(crp[80][80], test, COLORMAP_COOL);
     namedWindow("tr", WINDOW_NORMAL);
     imshow("tr", test);
+
+    applyColorMap(crp[80][83], test2, COLORMAP_COOL);
+    namedWindow("tr2", WINDOW_NORMAL);
+    imshow("tr2", test2);
     waitKey(0);
 
-*/
+
 
     /*
 	int indexPeriod = name.find_last_of('.');
@@ -92,7 +106,18 @@ int main( int argc, char** argv )
 
 
 
-    /* TEST MATRIUCE 3x3 */
+    //test_mat3x3();
+
+
+
+    return 0;
+}
+
+
+
+void test_mat3x3()
+{
+        /* TEST MATRIUCE 3x3 */
     
     std::array<cv::Mat, 8> vecteur3x3;
     for(int i=0; i<8; i++) {
@@ -138,10 +163,19 @@ int main( int argc, char** argv )
     vecteur3x3[5].at<double>(2,1) = vecteur3x3[6].at<double>(2,1) = vecteur3x3[7].at<double>(2,1) = 0;
     vecteur3x3[5].at<double>(2,2) = vecteur3x3[6].at<double>(2,2) = vecteur3x3[7].at<double>(2,2) = 0;
 
-    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::fixed << std::setprecision(4);
 
     unsigned int r = 1;
     Mat wr = Wr((int)r);
+
+    cout << "wr : " << endl;
+    for(unsigned int i=0;i<3; i++) {
+        for(unsigned int j=0; j<3; j++){
+            cout << " " <<  wr.at<double>(i,j) << " ";
+        }
+        cout << endl;
+    }
+
     double b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur3x3, wr, b, r);
 
@@ -162,8 +196,4 @@ int main( int argc, char** argv )
     namedWindow("tr", WINDOW_NORMAL);
     imshow("tr", test);
     waitKey(0);
-
-
-
-    return 0;
 }
