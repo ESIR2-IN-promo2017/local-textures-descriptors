@@ -10,12 +10,12 @@
 using namespace cv;
 using namespace std;
 
-
+void test_cholesky();
 void test_mat3x3();
 
 int main( int argc, char** argv )
 {
-    if( argc != 2)
+    /*if( argc != 2)
     {
         //incorrect arguments : help message
         cout <<" Usage: " << argv[0] << " <image>" << endl; //argv[0] contains the name of the program
@@ -43,7 +43,7 @@ int main( int argc, char** argv )
 
 
     // Appel Crp
-    unsigned int r = 1; //3
+    unsigned int r = 3; //3
     Mat wr = Wr((int)r);
 
     for(int i=0;i<r;i++) {
@@ -68,7 +68,7 @@ int main( int argc, char** argv )
     }
 
     xTmp = 80;
-    yTmp = 83;
+    yTmp = 81;
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
     for(unsigned int i=0;i<8; i++) {
         for(unsigned int j=0; j<8; j++){
@@ -78,17 +78,21 @@ int main( int argc, char** argv )
     }
 
 
-    Mat test, test2;
-    //crp[80][80].at<double>(2,2) /= (double)std::numeric_limits<double>::max();
-    applyColorMap(crp[80][80], test, COLORMAP_COOL);
+    Mat test1_1, test1_2;
+    Mat test2_1, test2_2;
+
+    crp[80][80].convertTo(test1_1, CV_8U);
+    crp[80][81].convertTo(test1_2, CV_8U);
+    
+    applyColorMap(test1_1, test2_1, COLORMAP_JET);
     namedWindow("tr", WINDOW_NORMAL);
-    imshow("tr", test);
+    imshow("tr", test2_1);
 
-    applyColorMap(crp[80][83], test2, COLORMAP_COOL);
+    applyColorMap(test1_2, test2_2, COLORMAP_JET);
     namedWindow("tr2", WINDOW_NORMAL);
-    imshow("tr2", test2);
+    imshow("tr2", test2_2);
     waitKey(0);
-
+    */
 
 
     /*
@@ -105,14 +109,60 @@ int main( int argc, char** argv )
 
 
 
+    test_cholesky();
 
     //test_mat3x3();
-
 
 
     return 0;
 }
 
+int func(int n) {
+    switch(n){
+        case 0: return 1;
+        case 1: return 5;
+        case 2: return 14;
+        case 3: return 15;
+        default: return 0;
+    }
+}
+
+void test_cholesky()
+{
+    int size = 4;
+    Mat mat(4,4, CV_32F);
+    Mat matCho(4,4, CV_32F);
+
+    for(int k=0; k<4; k++) {
+        for(int i=k; i<4; i++) {
+            for(int j=k; j<4; j++) {
+                mat.at<float>(i,j) = func(k);
+            }
+        }
+    }
+
+
+
+    Cholesky(mat, matCho);
+
+    cout << "Mat : " << endl;
+    for(int i=0;i<size; i++) {
+        for(int j=0; j<size; j++){
+            cout << " " << mat.at<float>(i,j) << "\t";
+        }
+        cout << endl;
+    }
+
+
+    cout << "MatCholesky : " << endl;
+    for(int i=0;i<size; i++) {
+        for(int j=0; j<size; j++){
+            cout << " " << matCho.at<float>(i,j) << "\t";
+        }
+        cout << endl;
+    }
+
+}
 
 
 void test_mat3x3()
