@@ -46,8 +46,8 @@ int main( int argc, char** argv )
     unsigned int r = 1; //3
     Mat wr = Wr((int)r);
 
-    for(int i=0;i<r;i++) {
-        for(int j=0;j<r;j++) {
+    for(unsigned int i=0;i<r;i++) {
+        for(unsigned int j=0;j<r;j++) {
             wr.at<float>(i,j) = 1;
         }
     }
