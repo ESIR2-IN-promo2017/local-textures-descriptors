@@ -1,6 +1,7 @@
 //#include "textureDescriptor.h"
 
 #include <iostream>
+#include <iomanip>
 #include <array>
 #include <cmath>
 #include <opencv2/core/core.hpp>
@@ -60,7 +61,6 @@ std::array<cv::Mat, 8> Z(cv::Mat const& img)
     cv::Sobel(L, dLdy, CV_64F, 0, 1, CV_SCHARR);
     cv::Sobel(L, d2Ldx2, CV_64F, 2, 0);
     cv::Sobel(L, d2Ldy2, CV_64F, 0, 2);
-    // Triggers an assertion
     cv::Sobel(L, d2Ldxdy, CV_64F, 1, 1);
 
     z[0] = abs(L);
@@ -127,10 +127,11 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
         {
             //qi in [0, 2r+1[ (therefore qi in patch width)
             //so qi-r in [-r, r]
-            mu += Wr.at<double>(qi, qj)*Zq(Z, i + qi-r, j + qj-r);
+            mu += /*Wr.at<double>(qi, qj)* */ Zq(Z, i + qi-r, j + qj-r);
         }
 
-    mu *= beta;
+    //mu *= beta;
+    mu /= (2*r+1) * (2*r+1);
 
     return mu;
 }
@@ -153,13 +154,14 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
         for(unsigned int j = r; j < imgSize.width - r; ++j)
         {
             cv::Mat mu = MUr(Z, Wr, beta, r, i, j);
+            //std::cout << mu << std::endl;
 
             cv::Mat Crp = cv::Mat::zeros(8,8, CV_64F);
 
             for(unsigned int qi = 0; qi < 2*r+1; ++qi)
                 for(unsigned int qj = 0; qj < 2*r+1; ++qj)
                 {
-                    cv::Mat zq = Zq(Z, i + qi-r, j + qj-r);
+                    cv::Mat zq = Zq(Z, i + qi-r, j + qj-r) - mu;
                     Crp += (zq*zq.t())*(Wr.at<double>(qi,qj));
                 }
 
