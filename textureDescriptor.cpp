@@ -13,7 +13,7 @@ T max(T const& a, T const& b)
     return (a > b)? a : b;
 }
 
-static void Cholesky( const cv::Mat& A, cv::Mat& S )
+void Cholesky(cv::Mat const& A, cv::Mat & S)
 {
     CV_Assert(A.type() == CV_32F);
     int dim = A.rows;
