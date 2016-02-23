@@ -25,7 +25,7 @@
  * @param A: la matrice à décomposer
  * @param S: une matrice dans laquelle insérer le résultat
  */
-static void Cholesky(cv::Mat const& A, cv::Mat & S);
+void Cholesky(cv::Mat const& A, cv::Mat & S);
 
 /**
  * @brief calcule le vecteur de paramètres pour l'image
