@@ -200,7 +200,7 @@ void test_mat3x3()
 
     std::cout << std::fixed << std::setprecision(4);
 
-    unsigned int r = 1;
+    unsigned int r = 10;
     Mat wr = Wr((int)r);
 
     cout << "wr : " << endl;
