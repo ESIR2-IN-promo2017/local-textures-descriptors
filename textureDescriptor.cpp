@@ -80,6 +80,8 @@ cv::Mat Wr(int r)
     int sizePatch = 2 * r + 1;
     cv::Mat Wr(sizePatch, sizePatch, CV_64F);
     double sigma_carre = pow((double)r / 3.0, 2);
+    if(r == 0)
+        sigma_carre = 1;
     double Z = 0.0;
     for (int i = -r; i <= r; i++) {
         for (int j = -r; j <= r; j++) {

@@ -37,7 +37,7 @@ int main( int argc, char** argv )
 
 
     // Appel Crp
-    unsigned int r = 3;
+    unsigned int r = 0;
     Mat wr = Wr((int)r);
     double b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
