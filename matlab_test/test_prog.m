@@ -19,10 +19,13 @@ z(3,3,:) = [4,0,0,1,1,0,0,0];
 
 z
 
-tmp_a = exp(-3 * 1 / 2); %exp(-||p-q||^2 / 2*sigma^2), sigma^2 = 1/3, ||p-q||^2 = 1
-tmp_b = exp(-3 * 2 / 2); % ||p-q||^2 = 2
 
-Wr = [tmp_b, tmp_a, tmp_b; tmp_a, 0, tmp_a; tmp_b, tmp_a, tmp_b];
+%Wr = [tmp_b, tmp_a, tmp_b; tmp_a, 0, tmp_a; tmp_b, tmp_a, tmp_b];
+Wr = ones(3,3)
+
+Wr = [0, 0.01, 0; 0.01, 0.96, 0.01; 0, 0.01, 0];
+        
+
 beta = 1/sum(sum(Wr));
 
 mu = sum(sum(z))./9;
