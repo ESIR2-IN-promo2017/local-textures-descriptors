@@ -1,6 +1,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/contrib/contrib.hpp>
 #include <iostream>
+#include <iomanip>
+#include <limits>
 #include <vector>
 #include "textureDescriptor.h"
 
@@ -26,7 +29,7 @@ int main( int argc, char** argv )
         cout <<  "Could not open or find the image" << std::endl ;
         return -1;
     }
-
+/*
 
     Mat imageLAB;
     cvtColor(image, imageLAB, CV_BGR2Lab);
@@ -43,17 +46,38 @@ int main( int argc, char** argv )
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
 
 
+    std::cout << std::fixed << std::setprecision(2);
     // Afficher 1er descripteur
-    cout << "1er descripteur" << endl;
-    for(unsigned int i=0;i<r; i++) {
-        for(unsigned int j=0; j<r; j++){
-            cout << " " << (int) crp[0][10].at<char>(i,j) << " ";
+    int xTmp = 80;
+    int yTmp = 80;
+    cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
+    for(unsigned int i=0;i<8; i++) {
+        for(unsigned int j=0; j<8; j++){
+            cout << " " << (int) crp[xTmp][yTmp].at<char>(i,j) << "\t";
         }
         cout << endl;
     }
 
+    xTmp = 80;
+    yTmp = 81;
+    cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
+    for(unsigned int i=0;i<8; i++) {
+        for(unsigned int j=0; j<8; j++){
+            cout << " " << (int) crp[xTmp][yTmp].at<char>(i,j) << "\t";
+        }
+        cout << endl;
+    }
 
-/*
+    Mat test;
+    //crp[80][80].at<double>(2,2) /= (double)std::numeric_limits<double>::max();
+    applyColorMap(crp[80][80], test, COLORMAP_COOL);
+    namedWindow("tr", WINDOW_NORMAL);
+    imshow("tr", test);
+    waitKey(0);
+
+*/
+
+    /*
 	int indexPeriod = name.find_last_of('.');
 	string nameOutFiles(name.substr(0, indexPeriod));
 	nameOutFiles += "_0" + name.substr(indexPeriod);
@@ -64,6 +88,82 @@ int main( int argc, char** argv )
 		cv::imwrite(nameOutFiles, vecteur[i]);
 
 	}*/
+
+
+
+
+    /* TEST MATRIUCE 3x3 */
+    
+    std::array<cv::Mat, 8> vecteur3x3;
+    for(int i=0; i<8; i++) {
+        vecteur3x3[i] = Mat(3, 3, CV_64F);
+    }
+    vecteur3x3[0].at<double>(0,0) = 0;
+    vecteur3x3[0].at<double>(0,1) = 1;
+    vecteur3x3[0].at<double>(0,2) = 2;
+    vecteur3x3[0].at<double>(1,0) = 1;
+    vecteur3x3[0].at<double>(1,1) = 2;
+    vecteur3x3[0].at<double>(1,2) = 3;
+    vecteur3x3[0].at<double>(2,0) = 2;
+    vecteur3x3[0].at<double>(2,1) = 3;
+    vecteur3x3[0].at<double>(2,2) = 4;
+
+    vecteur3x3[1].at<double>(0,0) = vecteur3x3[2].at<double>(0,0) = 0;
+    vecteur3x3[1].at<double>(0,1) = vecteur3x3[2].at<double>(0,1) = 0;
+    vecteur3x3[1].at<double>(0,2) = vecteur3x3[2].at<double>(0,2) = 0;
+    vecteur3x3[1].at<double>(1,0) = vecteur3x3[2].at<double>(1,0) = 0;
+    vecteur3x3[1].at<double>(1,1) = vecteur3x3[2].at<double>(1,1) = 0;
+    vecteur3x3[1].at<double>(1,2) = vecteur3x3[2].at<double>(1,2) = 0;
+    vecteur3x3[1].at<double>(2,0) = vecteur3x3[2].at<double>(2,0) = 0;
+    vecteur3x3[1].at<double>(2,1) = vecteur3x3[2].at<double>(2,1) = 0;
+    vecteur3x3[1].at<double>(2,2) = vecteur3x3[2].at<double>(2,2) = 0;
+
+    vecteur3x3[3].at<double>(0,0) = vecteur3x3[4].at<double>(0,0) = 1;
+    vecteur3x3[3].at<double>(0,1) = vecteur3x3[4].at<double>(0,1) = 1;
+    vecteur3x3[3].at<double>(0,2) = vecteur3x3[4].at<double>(0,2) = 1;
+    vecteur3x3[3].at<double>(1,0) = vecteur3x3[4].at<double>(1,0) = 1;
+    vecteur3x3[3].at<double>(1,1) = vecteur3x3[4].at<double>(1,1) = 1;
+    vecteur3x3[3].at<double>(1,2) = vecteur3x3[4].at<double>(1,2) = 1;
+    vecteur3x3[3].at<double>(2,0) = vecteur3x3[4].at<double>(2,0) = 1;
+    vecteur3x3[3].at<double>(2,1) = vecteur3x3[4].at<double>(2,1) = 1;
+    vecteur3x3[3].at<double>(2,2) = vecteur3x3[4].at<double>(2,2) = 1;
+
+    vecteur3x3[5].at<double>(0,0) = vecteur3x3[6].at<double>(0,0) = vecteur3x3[7].at<double>(0,0) = 0;
+    vecteur3x3[5].at<double>(0,1) = vecteur3x3[6].at<double>(0,1) = vecteur3x3[7].at<double>(0,1) = 0;
+    vecteur3x3[5].at<double>(0,2) = vecteur3x3[6].at<double>(0,2) = vecteur3x3[7].at<double>(0,2) = 0;
+    vecteur3x3[5].at<double>(1,0) = vecteur3x3[6].at<double>(1,0) = vecteur3x3[7].at<double>(1,0) = 0;
+    vecteur3x3[5].at<double>(1,1) = vecteur3x3[6].at<double>(1,1) = vecteur3x3[7].at<double>(1,1) = 0;
+    vecteur3x3[5].at<double>(1,2) = vecteur3x3[6].at<double>(1,2) = vecteur3x3[7].at<double>(1,2) = 0;
+    vecteur3x3[5].at<double>(2,0) = vecteur3x3[6].at<double>(2,0) = vecteur3x3[7].at<double>(2,0) = 0;
+    vecteur3x3[5].at<double>(2,1) = vecteur3x3[6].at<double>(2,1) = vecteur3x3[7].at<double>(2,1) = 0;
+    vecteur3x3[5].at<double>(2,2) = vecteur3x3[6].at<double>(2,2) = vecteur3x3[7].at<double>(2,2) = 0;
+
+    std::cout << std::fixed << std::setprecision(2);
+
+    unsigned int r = 1;
+    Mat wr = Wr((int)r);
+    double b = beta(wr);
+    std::vector<std::vector<cv::Mat> > crp = Crp(vecteur3x3, wr, b, r);
+
+
+    // Afficher 1er descripteur
+    int xTmp = 0;
+    int yTmp = 0;
+    cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
+    for(unsigned int i=0;i<8; i++) {
+        for(unsigned int j=0; j<8; j++){
+            cout << " " <<  crp[xTmp][yTmp].at<double>(i,j) << " ";
+        }
+        cout << endl;
+    }
+
+    Mat test;
+    applyColorMap(crp[0][0], test, COLORMAP_JET);
+    namedWindow("tr", WINDOW_NORMAL);
+    imshow("tr", test);
+    waitKey(0);
+
+
 
     return 0;
 }
