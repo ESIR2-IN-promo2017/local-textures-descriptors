@@ -54,7 +54,37 @@ int main( int argc, char** argv )
     float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
 
+    std::cout << "crp[66][100] = " << std::endl;
+    std::cout << crp[66][100] << std::endl;
 
+    Mat choleskyMatrix1;
+    Cholesky(crp[66][100], choleskyMatrix1);
+
+    std::cout << "cholesky[66][100] = " << std::endl;
+    std::cout << choleskyMatrix1 << std::endl;
+
+    std::cout << "crp[75][71] = " << std::endl;
+    std::cout << crp[75][71] << std::endl;
+
+    Mat choleskyMatrix2;
+    Cholesky(crp[75][71], choleskyMatrix2);
+
+    std::cout << "cholesky[75][71] = " << std::endl;
+    std::cout << choleskyMatrix2 << std::endl;
+
+    cv::Mat choleskyColor1;
+    applyColorMap(choleskyMatrix1, choleskyColor1, COLORMAP_COOL);
+    namedWindow("[66][100]", WINDOW_NORMAL);
+    imshow("[66][100]", choleskyColor1);
+
+    cv::Mat choleskyColor2;
+    applyColorMap(choleskyMatrix2, choleskyColor2, COLORMAP_COOL);
+    namedWindow("[75][71]", WINDOW_NORMAL);
+    imshow("[75][71]", choleskyColor2);
+
+    waitKey(0);
+
+    /*
     std::cout << std::fixed << std::setprecision(2);
     // Afficher 1er descripteur
     int xTmp = 80;
@@ -66,7 +96,9 @@ int main( int argc, char** argv )
         }
         cout << endl;
     }
+    //*/
 
+    /*
     xTmp = 80;
     yTmp = 83;
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
@@ -76,6 +108,8 @@ int main( int argc, char** argv )
         }
         cout << endl;
     }
+    //*/
+
 
 /*
     Mat test, test2;
