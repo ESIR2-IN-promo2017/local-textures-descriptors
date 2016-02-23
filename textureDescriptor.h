@@ -53,7 +53,7 @@ cv::Mat Wr(int r);
  *
  * @return 1/(somme des coefficients de Wr)
  */
-double beta(cv::Mat const& Wr);
+float beta(cv::Mat const& Wr);
 
 /**
  * @brief recupere le vecteur de paramètre z(q) pour un pixel
@@ -78,7 +78,7 @@ inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z, unsigned int const i, unsigne
  *
  * @return: un vecteur moyennant tous les vecteurs z(q) du patch
  */
-inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, double const& beta, unsigned int const r, unsigned int const i, unsigned int const j);
+inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int const r, unsigned int const i, unsigned int const j);
 
 /**
  * @brief calcule les matrices de covariances de toute l'image
@@ -90,4 +90,4 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, double co
  *
  * @return un tableau contenant les matrices de covariance de Z(p) de chaque pixel
  */
-std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, double const& beta, unsigned int r);
+std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r);

@@ -33,25 +33,25 @@ int main( int argc, char** argv )
         return -1;
     }
 
+    Mat imageFloat;
+    image.convertTo(imageFloat, CV_32FC3, 1.0/255.0, 0.0);
 
     Mat imageLAB;
-    cvtColor(image, imageLAB, CV_BGR2Lab);
+    cvtColor(imageFloat, imageLAB, CV_BGR2Lab);
 
     // Array of 8 matrix
 	std::array<cv::Mat, 8> vecteur(Z(imageLAB));
 
-
-
     // Appel Crp
-    unsigned int r = 0; //3
+    unsigned int r = 1; //3
     Mat wr = Wr((int)r);
 
     for(int i=0;i<r;i++) {
         for(int j=0;j<r;j++) {
-            wr.at<double>(i,j) = 1;
+            wr.at<float>(i,j) = 1;
         }
     }
-    double b = beta(wr);
+    float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
 
 
@@ -62,7 +62,7 @@ int main( int argc, char** argv )
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
     for(unsigned int i=0;i<8; i++) {
         for(unsigned int j=0; j<8; j++){
-            cout << " " << crp[xTmp][yTmp].at<double>(i,j) << "\t";
+            cout << " " << crp[xTmp][yTmp].at<float>(i,j) << "\t";
         }
         cout << endl;
     }
@@ -72,14 +72,14 @@ int main( int argc, char** argv )
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
     for(unsigned int i=0;i<8; i++) {
         for(unsigned int j=0; j<8; j++){
-            cout << " " << crp[xTmp][yTmp].at<double>(i,j) << "\t";
+            cout << " " << crp[xTmp][yTmp].at<float>(i,j) << "\t";
         }
         cout << endl;
     }
 
-
+/*
     Mat test, test2;
-    //crp[80][80].at<double>(2,2) /= (double)std::numeric_limits<double>::max();
+    //crp[80][80].at<float>(2,2) /= (float)std::numeric_limits<float>::max();
     applyColorMap(crp[80][80], test, COLORMAP_COOL);
     namedWindow("tr", WINDOW_NORMAL);
     imshow("tr", test);
@@ -88,6 +88,7 @@ int main( int argc, char** argv )
     namedWindow("tr2", WINDOW_NORMAL);
     imshow("tr2", test2);
     waitKey(0);
+    //*/
 
 
 
@@ -121,47 +122,47 @@ void test_mat3x3()
     
     std::array<cv::Mat, 8> vecteur3x3;
     for(int i=0; i<8; i++) {
-        vecteur3x3[i] = Mat(3, 3, CV_64F);
+        vecteur3x3[i] = Mat(3, 3, CV_32F);
     }
-    vecteur3x3[0].at<double>(0,0) = 0;
-    vecteur3x3[0].at<double>(0,1) = 1;
-    vecteur3x3[0].at<double>(0,2) = 2;
-    vecteur3x3[0].at<double>(1,0) = 1;
-    vecteur3x3[0].at<double>(1,1) = 2;
-    vecteur3x3[0].at<double>(1,2) = 3;
-    vecteur3x3[0].at<double>(2,0) = 2;
-    vecteur3x3[0].at<double>(2,1) = 3;
-    vecteur3x3[0].at<double>(2,2) = 4;
+    vecteur3x3[0].at<float>(0,0) = 0;
+    vecteur3x3[0].at<float>(0,1) = 1;
+    vecteur3x3[0].at<float>(0,2) = 2;
+    vecteur3x3[0].at<float>(1,0) = 1;
+    vecteur3x3[0].at<float>(1,1) = 2;
+    vecteur3x3[0].at<float>(1,2) = 3;
+    vecteur3x3[0].at<float>(2,0) = 2;
+    vecteur3x3[0].at<float>(2,1) = 3;
+    vecteur3x3[0].at<float>(2,2) = 4;
 
-    vecteur3x3[1].at<double>(0,0) = vecteur3x3[2].at<double>(0,0) = 0;
-    vecteur3x3[1].at<double>(0,1) = vecteur3x3[2].at<double>(0,1) = 0;
-    vecteur3x3[1].at<double>(0,2) = vecteur3x3[2].at<double>(0,2) = 0;
-    vecteur3x3[1].at<double>(1,0) = vecteur3x3[2].at<double>(1,0) = 0;
-    vecteur3x3[1].at<double>(1,1) = vecteur3x3[2].at<double>(1,1) = 0;
-    vecteur3x3[1].at<double>(1,2) = vecteur3x3[2].at<double>(1,2) = 0;
-    vecteur3x3[1].at<double>(2,0) = vecteur3x3[2].at<double>(2,0) = 0;
-    vecteur3x3[1].at<double>(2,1) = vecteur3x3[2].at<double>(2,1) = 0;
-    vecteur3x3[1].at<double>(2,2) = vecteur3x3[2].at<double>(2,2) = 0;
+    vecteur3x3[1].at<float>(0,0) = vecteur3x3[2].at<float>(0,0) = 0;
+    vecteur3x3[1].at<float>(0,1) = vecteur3x3[2].at<float>(0,1) = 0;
+    vecteur3x3[1].at<float>(0,2) = vecteur3x3[2].at<float>(0,2) = 0;
+    vecteur3x3[1].at<float>(1,0) = vecteur3x3[2].at<float>(1,0) = 0;
+    vecteur3x3[1].at<float>(1,1) = vecteur3x3[2].at<float>(1,1) = 0;
+    vecteur3x3[1].at<float>(1,2) = vecteur3x3[2].at<float>(1,2) = 0;
+    vecteur3x3[1].at<float>(2,0) = vecteur3x3[2].at<float>(2,0) = 0;
+    vecteur3x3[1].at<float>(2,1) = vecteur3x3[2].at<float>(2,1) = 0;
+    vecteur3x3[1].at<float>(2,2) = vecteur3x3[2].at<float>(2,2) = 0;
 
-    vecteur3x3[3].at<double>(0,0) = vecteur3x3[4].at<double>(0,0) = 1;
-    vecteur3x3[3].at<double>(0,1) = vecteur3x3[4].at<double>(0,1) = 1;
-    vecteur3x3[3].at<double>(0,2) = vecteur3x3[4].at<double>(0,2) = 1;
-    vecteur3x3[3].at<double>(1,0) = vecteur3x3[4].at<double>(1,0) = 1;
-    vecteur3x3[3].at<double>(1,1) = vecteur3x3[4].at<double>(1,1) = 1;
-    vecteur3x3[3].at<double>(1,2) = vecteur3x3[4].at<double>(1,2) = 1;
-    vecteur3x3[3].at<double>(2,0) = vecteur3x3[4].at<double>(2,0) = 1;
-    vecteur3x3[3].at<double>(2,1) = vecteur3x3[4].at<double>(2,1) = 1;
-    vecteur3x3[3].at<double>(2,2) = vecteur3x3[4].at<double>(2,2) = 1;
+    vecteur3x3[3].at<float>(0,0) = vecteur3x3[4].at<float>(0,0) = 1;
+    vecteur3x3[3].at<float>(0,1) = vecteur3x3[4].at<float>(0,1) = 1;
+    vecteur3x3[3].at<float>(0,2) = vecteur3x3[4].at<float>(0,2) = 1;
+    vecteur3x3[3].at<float>(1,0) = vecteur3x3[4].at<float>(1,0) = 1;
+    vecteur3x3[3].at<float>(1,1) = vecteur3x3[4].at<float>(1,1) = 1;
+    vecteur3x3[3].at<float>(1,2) = vecteur3x3[4].at<float>(1,2) = 1;
+    vecteur3x3[3].at<float>(2,0) = vecteur3x3[4].at<float>(2,0) = 1;
+    vecteur3x3[3].at<float>(2,1) = vecteur3x3[4].at<float>(2,1) = 1;
+    vecteur3x3[3].at<float>(2,2) = vecteur3x3[4].at<float>(2,2) = 1;
 
-    vecteur3x3[5].at<double>(0,0) = vecteur3x3[6].at<double>(0,0) = vecteur3x3[7].at<double>(0,0) = 0;
-    vecteur3x3[5].at<double>(0,1) = vecteur3x3[6].at<double>(0,1) = vecteur3x3[7].at<double>(0,1) = 0;
-    vecteur3x3[5].at<double>(0,2) = vecteur3x3[6].at<double>(0,2) = vecteur3x3[7].at<double>(0,2) = 0;
-    vecteur3x3[5].at<double>(1,0) = vecteur3x3[6].at<double>(1,0) = vecteur3x3[7].at<double>(1,0) = 0;
-    vecteur3x3[5].at<double>(1,1) = vecteur3x3[6].at<double>(1,1) = vecteur3x3[7].at<double>(1,1) = 0;
-    vecteur3x3[5].at<double>(1,2) = vecteur3x3[6].at<double>(1,2) = vecteur3x3[7].at<double>(1,2) = 0;
-    vecteur3x3[5].at<double>(2,0) = vecteur3x3[6].at<double>(2,0) = vecteur3x3[7].at<double>(2,0) = 0;
-    vecteur3x3[5].at<double>(2,1) = vecteur3x3[6].at<double>(2,1) = vecteur3x3[7].at<double>(2,1) = 0;
-    vecteur3x3[5].at<double>(2,2) = vecteur3x3[6].at<double>(2,2) = vecteur3x3[7].at<double>(2,2) = 0;
+    vecteur3x3[5].at<float>(0,0) = vecteur3x3[6].at<float>(0,0) = vecteur3x3[7].at<float>(0,0) = 0;
+    vecteur3x3[5].at<float>(0,1) = vecteur3x3[6].at<float>(0,1) = vecteur3x3[7].at<float>(0,1) = 0;
+    vecteur3x3[5].at<float>(0,2) = vecteur3x3[6].at<float>(0,2) = vecteur3x3[7].at<float>(0,2) = 0;
+    vecteur3x3[5].at<float>(1,0) = vecteur3x3[6].at<float>(1,0) = vecteur3x3[7].at<float>(1,0) = 0;
+    vecteur3x3[5].at<float>(1,1) = vecteur3x3[6].at<float>(1,1) = vecteur3x3[7].at<float>(1,1) = 0;
+    vecteur3x3[5].at<float>(1,2) = vecteur3x3[6].at<float>(1,2) = vecteur3x3[7].at<float>(1,2) = 0;
+    vecteur3x3[5].at<float>(2,0) = vecteur3x3[6].at<float>(2,0) = vecteur3x3[7].at<float>(2,0) = 0;
+    vecteur3x3[5].at<float>(2,1) = vecteur3x3[6].at<float>(2,1) = vecteur3x3[7].at<float>(2,1) = 0;
+    vecteur3x3[5].at<float>(2,2) = vecteur3x3[6].at<float>(2,2) = vecteur3x3[7].at<float>(2,2) = 0;
 
     std::cout << std::fixed << std::setprecision(4);
 
@@ -171,12 +172,12 @@ void test_mat3x3()
     cout << "wr : " << endl;
     for(unsigned int i=0;i<3; i++) {
         for(unsigned int j=0; j<3; j++){
-            cout << " " <<  wr.at<double>(i,j) << " ";
+            cout << " " <<  wr.at<float>(i,j) << " ";
         }
         cout << endl;
     }
 
-    double b = beta(wr);
+    float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur3x3, wr, b, r);
 
 
@@ -186,7 +187,7 @@ void test_mat3x3()
     cout << "Descripteur ("<<xTmp << "," << yTmp << ")" << endl;
     for(unsigned int i=0;i<8; i++) {
         for(unsigned int j=0; j<8; j++){
-            cout << " " <<  crp[xTmp][yTmp].at<double>(i,j) << " ";
+            cout << " " <<  crp[xTmp][yTmp].at<float>(i,j) << " ";
         }
         cout << endl;
     }
