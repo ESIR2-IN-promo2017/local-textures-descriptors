@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <opencv2/highgui/highgui.hpp>
 #include <array>
 #include <cmath>
 #include <opencv2/core/core.hpp>
@@ -19,29 +20,52 @@ void Cholesky(cv::Mat const& A, cv::Mat & S)
     int dim = A.rows;
     S.create(dim, dim, CV_32F);
 
-    for(int i = 0; i < dim; i++ )
-    {
-        for(int j = 0; j < i; j++ )
-            S.at<float>(i,j) = 0.f;
+    cv::Mat E, M; 
+    cv::eigen(A, E, M);
 
-        float sum = 0.f;
-        for(int k = 0; k < i; k++ )
-        {
-            float val = S.at<float>(k,i);
-            sum += val*val;
-        }
+    //std::cout << "val propre A" << E << std::endl;
 
-        S.at<float>(i,i) = sqrt(max(A.at<float>(i,i) - sum, 0.f));
-        float ival = 1.f/S.at<float>(i, i);
+    cv::Mat Ebis= cv::Mat::diag(E);
 
-        for(int j = i + 1; j < dim; j++ )
-        {
-            sum = 0;
-            for(int k = 0; k < i; k++ )
-                sum += S.at<float>(k, i) * S.at<float>(k, j);
+    for(int i=0; i<8; i++){
+      for(int j=0; j<8; j++){
+	if(Ebis.at<double>(i,j)<0.0){
+	  Ebis.at<double>(i,j)=0.0;
+	}
+      }
+    }
 
-            S.at<float>(i, j) = (A.at<float>(i, j) - sum)*ival;
-        }
+    cv::Mat Abis= M.t()*Ebis*M;
+    /*
+    cv::eigen(Abis, E,M);
+    std::cout << "val propre Abis" << E << std::endl;
+    cv::imshow("A", A);
+    cv::imshow("Abis", Abis);
+    std::cout << "A :"<< std::endl<< A<<std::endl;
+    std::cout << "A bis :"<< std::endl<< Abis<<std::endl;
+    */
+    for(int i = 0; i < dim; i++ ){
+      for(int j = 0; j < i; j++ )
+	S.at<float>(i,j) = 0.f;
+      
+      float sum = 0.f;
+      for(int k = 0; k < i; k++ )
+	{
+	  float val = S.at<float>(k,i);
+	  sum += val*val;
+	}
+      
+      S.at<float>(i,i) = sqrt(max(Abis.at<float>(i,i) - sum, 0.f));
+      float ival = 1.f/S.at<float>(i, i);
+      
+      for(int j = i + 1; j < dim; j++ )
+	{
+	  sum = 0;
+	  for(int k = 0; k < i; k++ )
+	    sum += S.at<float>(k, i) * S.at<float>(k, j);
+	  
+	  S.at<float>(i, j) = (Abis.at<float>(i, j) - sum)*ival;
+	}
     }
     transpose(S,S);
 }

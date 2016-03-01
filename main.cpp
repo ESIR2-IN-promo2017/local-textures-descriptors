@@ -43,7 +43,7 @@ int main( int argc, char** argv )
 	std::array<cv::Mat, 8> vecteur(Z(imageLAB));
 
     // Appel Crp
-    unsigned int r = 1; //3
+    unsigned int r = 10; //3
     Mat wr = Wr((int)r);
 
     for(unsigned int i=0;i<r;i++) {
