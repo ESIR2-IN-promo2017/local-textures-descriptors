@@ -72,15 +72,10 @@ int main( int argc, char** argv )
     std::cout << "cholesky[75][71] = " << std::endl;
     std::cout << choleskyMatrix2 << std::endl;
 
-    cv::Mat choleskyColor1;
-    applyColorMap(choleskyMatrix1, choleskyColor1, COLORMAP_COOL);
-    namedWindow("[66][100]", WINDOW_NORMAL);
-    imshow("[66][100]", choleskyColor1);
 
-    cv::Mat choleskyColor2;
-    applyColorMap(choleskyMatrix2, choleskyColor2, COLORMAP_COOL);
-    namedWindow("[75][71]", WINDOW_NORMAL);
-    imshow("[75][71]", choleskyColor2);
+    show_descriptor(choleskyMatrix1, "[66][100]");
+    show_descriptor(choleskyMatrix2, "[75][71]");
+
 
     waitKey(0);
 

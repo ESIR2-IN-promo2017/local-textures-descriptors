@@ -1,4 +1,4 @@
-//#include "textureDescriptor.h"
+#include "textureDescriptor.h"
 
 #include <iostream>
 #include <iomanip>
@@ -6,6 +6,8 @@
 #include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/contrib/contrib.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 template<typename T>
 T max(T const& a, T const& b)
@@ -177,4 +179,13 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
     }
 
     return Crp_vector;
+}
+
+void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindow)
+{
+    cv::Mat choleskyColor;
+    applyColorMap(choleskyMatrix, choleskyColor, cv::COLORMAP_BONE);
+
+    namedWindow(nameWindow, cv::WINDOW_NORMAL);
+    imshow(nameWindow, choleskyColor);
 }

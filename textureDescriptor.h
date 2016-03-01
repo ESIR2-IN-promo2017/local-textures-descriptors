@@ -91,3 +91,5 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float con
  * @return un tableau contenant les matrices de covariance de Z(p) de chaque pixel
  */
 std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r);
+
+void show_descriptor(const cv::Mat& choleskyMatrix1, const std::string& nameWindow = "");
