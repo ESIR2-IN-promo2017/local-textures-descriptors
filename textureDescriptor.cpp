@@ -16,7 +16,7 @@ T max(T const& a, T const& b)
     return (a > b)? a : b;
 }
 
-void Cholesky(cv::Mat const& A, cv::Mat & S)
+int Cholesky(cv::Mat const& A, cv::Mat & S)
 {
     CV_Assert(A.type() == CV_32F);
     int dim = A.rows;
@@ -31,8 +31,8 @@ void Cholesky(cv::Mat const& A, cv::Mat & S)
 
     for(int i=0; i<8; i++){
       for(int j=0; j<8; j++){
-	if(Ebis.at<double>(i,j)<0.0){
-	  Ebis.at<double>(i,j)=0.0;
+	if(Ebis.at<float>(i,j)<0.0){
+	  Ebis.at<float>(i,j)=0.0;
 	}
       }
     }
@@ -70,6 +70,14 @@ void Cholesky(cv::Mat const& A, cv::Mat & S)
 	}
     }
     transpose(S,S);
+
+
+    for(int i=0; i<8; i++){
+      for(int j=0; j<8; j++){
+	if(std::isnan(S.at<float>(i,j))) return 1;
+      }
+    }
+    return 0;
 }
 
 std::array<cv::Mat, 8> Z(cv::Mat const& img)
@@ -190,6 +198,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
                     cv::Mat zq = Zq(Z, i + qi-r, j + qj-r) - mu;
                     //std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
                     //std::cout << zq << std::endl;
+
                     Crp += (zq*zq.t())*(Wr.at<float>(qi,qj));
                 }
 

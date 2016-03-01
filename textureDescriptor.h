@@ -24,8 +24,10 @@
  *
  * @param A: la matrice à décomposer
  * @param S: une matrice dans laquelle insérer le résultat
+ *
+ * @return 1 si la matrice est composée d'au moins un NaN, 0 sinon.
  */
-void Cholesky(cv::Mat const& A, cv::Mat & S);
+int Cholesky(cv::Mat const& A, cv::Mat & S);
 
 /**
  * @brief calcule le vecteur de paramètres pour l'image
