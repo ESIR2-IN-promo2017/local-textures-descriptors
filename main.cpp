@@ -63,10 +63,18 @@ int main( int argc, char** argv )
     Mat choleskyMatrixAll;
     for(unsigned int i=2*r; i<rows-2*r; i++){
       for(unsigned int j=2*r; j<cols-2*r; j++){
-	cptErr+=Cholesky(crp[i][j], choleskyMatrixAll);
+        cptErr+=Cholesky(crp[i][j], choleskyMatrixAll);
       }
-    } 
+    }
     std::cout<< "nombre de patchs à problème: "<< cptErr<< std::endl;
+
+    cv::Mat mat = matDescriptorToVector(crp[20][20]);
+    cv::Mat mat2 = matDescriptorToVector(crp[20][21]);
+
+    std::cout << distanceColumnVector(mat, mat2) << std::endl;
+
+    // Affichage des 2 vecteurs
+
 
     /*
     Mat choleskyMatrix1;

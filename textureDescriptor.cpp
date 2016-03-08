@@ -222,3 +222,36 @@ void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindo
     namedWindow(nameWindow, cv::WINDOW_NORMAL);
     imshow(nameWindow, choleskyColor);
 }
+
+cv::Mat matDescriptorToVector(const cv::Mat& matDescriptor)
+{
+    int d = 8;
+    int size = (d*(d+1)) /2;
+    cv::Mat vector(size, 1, CV_32F);
+
+    int k = 0;
+    int indiceVector = 0;
+    for(int i=0; i<8; i++) {
+        for(int j=k; j<8; j++) {
+            vector.at<double>(indiceVector, 1) = matDescriptor.at<double>(i, j);
+            indiceVector++;
+        }
+        k++;
+    }
+    return vector;
+}
+
+
+double distanceColumnVector(const cv::Mat& vector1, const cv::Mat& vector2)
+{
+    double sum = 0.0;
+
+    if( vector1.rows != vector2.rows)
+        return 0.0;
+
+    for(int i=0; i<vector1.rows; i++) {
+        double tmp = vector1.at<double>(i, 1) - vector2.at<double>(i, 1);
+        sum += tmp * tmp;
+    }
+    return sqrt(sum);
+}

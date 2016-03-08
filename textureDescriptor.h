@@ -95,3 +95,15 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float con
 std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r);
 
 void show_descriptor(const cv::Mat& choleskyMatrix1, const std::string& nameWindow = "");
+
+/**
+ * @brief Transforme le descripteur
+ * d'une matrice vers un vecteur colonne
+ */
+cv::Mat matDescriptorToVector(const cv::Mat& matDescriptor);
+
+
+/**
+ *	Calcule la distance euclidienne entre deux vecteurs colonnes
+ */
+double distanceColumnVector(const cv::Mat& vector1, const cv::Mat& vector2);
