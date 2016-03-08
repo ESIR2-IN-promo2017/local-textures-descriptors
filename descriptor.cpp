@@ -28,12 +28,10 @@ Descriptor::Descriptor(cv::Mat const& img)
 {
     m_descriptors = new TextureDescriptor[m_img.rows * m_img.cols];
 
+    cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
+    calculVecteurAttributs();
 
-    for(unsigned int i = 0; i < (unsigned int) img.rows; ++i)
-        for(unsigned int j = 0; j < (unsigned int) img.cols; ++j)
-        {
-        }
 }
 
 TextureDescriptor Descriptor::at(unsigned int i, unsigned int j) const
@@ -70,4 +68,27 @@ void Descriptor::calculPonderations()
 
     m_ponderations /= Z;
     m_beta = 1/Z;
+}
+
+void Descriptor::calculVecteurAttributs()
+{
+    std::vector<cv::Mat> Lab;
+    cv::split(m_img, Lab);
+
+    cv::Mat dLdx, dLdy, d2Ldx2, d2Ldy2, d2Ldxdy;
+
+    cv::Sobel(Lab[0], dLdx, CV_32F, 1, 0, CV_SCHARR);
+    cv::Sobel(Lab[0], dLdy, CV_32F, 0, 1, CV_SCHARR);
+    cv::Sobel(Lab[0], d2Ldx2, CV_32F, 2, 0);
+    cv::Sobel(Lab[0], d2Ldy2, CV_32F, 0, 2);
+    cv::Sobel(Lab[0], d2Ldxdy, CV_32F, 1, 1);
+
+    m_attribVector.push_back(abs(Lab[0]));
+    m_attribVector.push_back(abs(Lab[1]));
+    m_attribVector.push_back(abs(Lab[2]));
+    m_attribVector.push_back(abs(dLdx));
+    m_attribVector.push_back(abs(dLdy));
+    m_attribVector.push_back(abs(d2Ldx2));
+    m_attribVector.push_back(abs(d2Ldy2));
+    m_attribVector.push_back(abs(d2Ldxdy));
 }

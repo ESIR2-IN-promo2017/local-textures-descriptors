@@ -36,6 +36,7 @@ class Descriptor
     private:
         float getPixel(cv::Mat const& mat, long i, long j);
         void calculPonderations();
+        void calculVecteurAttributs();
 
     private:
         unsigned int const m_patch_size = 1;
@@ -45,4 +46,6 @@ class Descriptor
 
         cv::Mat m_ponderations;
         float m_beta;
+
+        std::vector<cv::Mat> m_attribVector;
 };
