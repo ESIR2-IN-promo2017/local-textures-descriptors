@@ -34,7 +34,6 @@ class Descriptor
         TextureDescriptor at(unsigned int i, unsigned int j) const;
 
     private:
-        float getPixel(cv::Mat const& mat, long i, long j);
         void calculPonderations();
         void calculVecteurAttributs();
 
