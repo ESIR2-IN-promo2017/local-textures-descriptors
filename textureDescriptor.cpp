@@ -1,11 +1,14 @@
-//#include "textureDescriptor.h"
+#include "textureDescriptor.h"
 
 #include <iostream>
 #include <iomanip>
+#include <opencv2/highgui/highgui.hpp>
 #include <array>
 #include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/contrib/contrib.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 template<typename T>
 T max(T const& a, T const& b)
@@ -13,37 +16,68 @@ T max(T const& a, T const& b)
     return (a > b)? a : b;
 }
 
-void Cholesky(cv::Mat const& A, cv::Mat & S)
+int Cholesky(cv::Mat const& A, cv::Mat & S)
 {
     CV_Assert(A.type() == CV_32F);
     int dim = A.rows;
     S.create(dim, dim, CV_32F);
 
-    for(int i = 0; i < dim; i++ )
-    {
-        for(int j = 0; j < i; j++ )
-            S.at<float>(i,j) = 0.f;
+    cv::Mat E, M; 
+    cv::eigen(A, E, M);
 
-        float sum = 0.f;
-        for(int k = 0; k < i; k++ )
-        {
-            float val = S.at<float>(k,i);
-            sum += val*val;
-        }
+    //std::cout << "val propre A" << E << std::endl;
 
-        S.at<float>(i,i) = sqrt(max(A.at<float>(i,i) - sum, 0.f));
-        float ival = 1.f/S.at<float>(i, i);
+    cv::Mat Ebis= cv::Mat::diag(E);
 
-        for(int j = i + 1; j < dim; j++ )
-        {
-            sum = 0;
-            for(int k = 0; k < i; k++ )
-                sum += S.at<float>(k, i) * S.at<float>(k, j);
+    for(int i=0; i<8; i++){
+      for(int j=0; j<8; j++){
+	if(Ebis.at<float>(i,j)<0.0){
+	  Ebis.at<float>(i,j)=0.0;
+	}
+      }
+    }
 
-            S.at<float>(i, j) = (A.at<float>(i, j) - sum)*ival;
-        }
+    cv::Mat Abis= M.t()*Ebis*M;
+    /*
+    cv::eigen(Abis, E,M);
+    std::cout << "val propre Abis" << E << std::endl;
+    cv::imshow("A", A);
+    cv::imshow("Abis", Abis);
+    std::cout << "A :"<< std::endl<< A<<std::endl;
+    std::cout << "A bis :"<< std::endl<< Abis<<std::endl;
+    */
+    for(int i = 0; i < dim; i++ ){
+      for(int j = 0; j < i; j++ )
+	S.at<float>(i,j) = 0.f;
+      
+      float sum = 0.f;
+      for(int k = 0; k < i; k++ )
+	{
+	  float val = S.at<float>(k,i);
+	  sum += val*val;
+	}
+      
+      S.at<float>(i,i) = sqrt(max(Abis.at<float>(i,i) - sum, 0.f));
+      float ival = 1.f/S.at<float>(i, i);
+      
+      for(int j = i + 1; j < dim; j++ )
+	{
+	  sum = 0;
+	  for(int k = 0; k < i; k++ )
+	    sum += S.at<float>(k, i) * S.at<float>(k, j);
+	  
+	  S.at<float>(i, j) = (Abis.at<float>(i, j) - sum)*ival;
+	}
     }
     transpose(S,S);
+
+
+    for(int i=0; i<8; i++){
+      for(int j=0; j<8; j++){
+	if(std::isnan(S.at<float>(i,j))) return 1;
+      }
+    }
+    return 0;
 }
 
 std::array<cv::Mat, 8> Z(cv::Mat const& img)
@@ -164,6 +198,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
                     cv::Mat zq = Zq(Z, i + qi-r, j + qj-r) - mu;
                     //std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
                     //std::cout << zq << std::endl;
+
                     Crp += (zq*zq.t())*(Wr.at<float>(qi,qj));
                 }
 
@@ -177,4 +212,13 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
     }
 
     return Crp_vector;
+}
+
+void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindow)
+{
+    cv::Mat choleskyColor;
+    applyColorMap(choleskyMatrix, choleskyColor, cv::COLORMAP_BONE);
+
+    namedWindow(nameWindow, cv::WINDOW_NORMAL);
+    imshow(nameWindow, choleskyColor);
 }

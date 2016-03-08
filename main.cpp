@@ -26,6 +26,8 @@ int main( int argc, char** argv )
 
     Mat image;
     image = imread(name, CV_LOAD_IMAGE_COLOR);   // Read the file
+    int rows = image.rows;
+    int cols = image.cols;
 
     if(! image.data )                              // Check for invalid input
     {
@@ -43,7 +45,7 @@ int main( int argc, char** argv )
 	std::array<cv::Mat, 8> vecteur(Z(imageLAB));
 
     // Appel Crp
-    unsigned int r = 1; //3
+    unsigned int r = 10; 
     Mat wr = Wr((int)r);
 
     for(unsigned int i=0;i<r;i++) {
@@ -54,9 +56,19 @@ int main( int argc, char** argv )
     float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
 
-    std::cout << "crp[66][100] = " << std::endl;
-    std::cout << crp[66][100] << std::endl;
+    //std::cout << "crp[66][100] = " << std::endl;
+    //std::cout << crp[66][100] << std::endl;
 
+    int cptErr=0;
+    Mat choleskyMatrixAll;
+    for(unsigned int i=2*r; i<rows-2*r; i++){
+      for(unsigned int j=2*r; j<cols-2*r; j++){
+	cptErr+=Cholesky(crp[i][j], choleskyMatrixAll);
+      }
+    } 
+    std::cout<< "nombre de patchs à problème: "<< cptErr<< std::endl;
+
+    /*
     Mat choleskyMatrix1;
     Cholesky(crp[66][100], choleskyMatrix1);
 
@@ -72,18 +84,13 @@ int main( int argc, char** argv )
     std::cout << "cholesky[75][71] = " << std::endl;
     std::cout << choleskyMatrix2 << std::endl;
 
-    cv::Mat choleskyColor1;
-    applyColorMap(choleskyMatrix1, choleskyColor1, COLORMAP_COOL);
-    namedWindow("[66][100]", WINDOW_NORMAL);
-    imshow("[66][100]", choleskyColor1);
 
-    cv::Mat choleskyColor2;
-    applyColorMap(choleskyMatrix2, choleskyColor2, COLORMAP_COOL);
-    namedWindow("[75][71]", WINDOW_NORMAL);
-    imshow("[75][71]", choleskyColor2);
+    show_descriptor(choleskyMatrix1, "[66][100]");
+    show_descriptor(choleskyMatrix2, "[75][71]");
+
 
     waitKey(0);
-
+    */
     /*
     std::cout << std::fixed << std::setprecision(2);
     // Afficher 1er descripteur
