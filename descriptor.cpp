@@ -41,6 +41,14 @@ TextureDescriptor Descriptor::at(unsigned int i, unsigned int j) const
     return m_descriptors[i*m_img.cols + j];
 }
 
+float getPixel(cv::Mat const& mat, long i, long j)
+{
+    unsigned int ii = (unsigned int) std::max(0l, std::min(i, (long) mat.rows));
+    unsigned int jj = (unsigned int) std::max(0l, std::min(j, (long) mat.cols));
+
+    return mat.at<float>(ii,jj);
+}
+
 void Descriptor::calculPonderations()
 {
     m_ponderations = cv::Mat(m_patch_size, m_patch_size, CV_32F);
@@ -61,4 +69,5 @@ void Descriptor::calculPonderations()
         }
 
     m_ponderations /= Z;
+    m_beta = 1/Z;
 }

@@ -34,6 +34,7 @@ class Descriptor
         TextureDescriptor at(unsigned int i, unsigned int j) const;
 
     private:
+        float getPixel(cv::Mat const& mat, long i, long j);
         void calculPonderations();
 
     private:
@@ -43,4 +44,5 @@ class Descriptor
         cv::Mat m_img;
 
         cv::Mat m_ponderations;
+        float m_beta;
 };
