@@ -34,10 +34,13 @@ class Descriptor
         TextureDescriptor at(unsigned int i, unsigned int j) const;
 
     private:
-        calculPonderations();
+        void calculPonderations();
 
     private:
+        unsigned int const m_patch_size = 1;
+
         TextureDescriptor* m_descriptors;
         cv::Mat m_img;
+
         cv::Mat m_ponderations;
 };
