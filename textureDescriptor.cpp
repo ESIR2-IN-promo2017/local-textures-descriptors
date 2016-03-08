@@ -222,3 +222,27 @@ void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindo
     namedWindow(nameWindow, cv::WINDOW_NORMAL);
     imshow(nameWindow, choleskyColor);
 }
+
+void on_mouse( int e, int x, int y, int d, void *ptr )
+{
+    if (e == EVENT_LBUTTONDOWN )
+    {
+        if(right_image.size() < 2 )
+        {
+ 
+            right_image.push_back(Point2f(float(x),float(y)));
+            cout << x << " " << y << endl;
+        }
+        else
+        {
+            cout << " Calculating distance " <<endl;
+            // Deactivate callback
+            cv::setMouseCallback("Display window", NULL, NULL);
+            // once we get 2 corresponding points in both images calculate signature vector
+            Mat S1 = ; // signature clic1
+	    Mat S2 = 0; // signature clic2
+	    
+	    cout << "distance :" << distanceColumnVector(S1, S2) << endl; 
+        } 
+    }
+}

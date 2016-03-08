@@ -95,3 +95,10 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float con
 std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r);
 
 void show_descriptor(const cv::Mat& choleskyMatrix1, const std::string& nameWindow = "");
+
+/**
+ * @brief calcule la distance entre les signatures de deux points 
+ *
+ *
+ */
+void on_mouse( int e, int x, int y, int d, void *ptr );
