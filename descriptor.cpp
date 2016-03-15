@@ -21,11 +21,6 @@ TextureDescriptor::TextureDescriptor()
     //TODO
 }
 
-TextureDescriptor::TextureDescriptor(float L, float a, float b, float dLdx, float dLdy, float d2Ldx2, float d2Ldy2, float d2Ldxdy)
-{
-    //TODO
-}
-
 double TextureDescriptor::distance(TextureDescriptor const& rhs) const
 {
     //TODO

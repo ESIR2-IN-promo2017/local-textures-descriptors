@@ -21,7 +21,7 @@ class TextureDescriptor
 
     protected:
         TextureDescriptor();
-        TextureDescriptor(float L, float a, float b, float dLdx, float dLdy, float d2Ldx2, float d2Ldy2, float d2Ldxdy);
+        TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j);
 
     private:
         cv::Mat m_descriptor;
@@ -40,11 +40,12 @@ class Descriptor
     private:
         unsigned int const m_patch_size = 1;
 
-        TextureDescriptor* m_descriptors;
         cv::Mat m_img;
 
         cv::Mat m_ponderations;
         float m_beta;
 
         std::vector<cv::Mat> m_attribVector;
+
+        TextureDescriptor* m_descriptors;
 };
