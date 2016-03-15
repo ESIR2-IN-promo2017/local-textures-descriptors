@@ -21,7 +21,11 @@ class TextureDescriptor
 
     protected:
         TextureDescriptor();
-        TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j);
+        TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r);
+
+        cv::Mat extractAttribVector(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j);
+        cv::Mat calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, unsigned int r);
+        void Cholesky(cv::Mat const& A, cv::Mat & S);
 
     private:
         cv::Mat m_descriptor;
@@ -30,7 +34,7 @@ class TextureDescriptor
 class Descriptor
 {
     public:
-        Descriptor(cv::Mat const& img);
+        Descriptor(cv::Mat const& img, unsigned int r);
         ~Descriptor();
 
         TextureDescriptor at(unsigned int i, unsigned int j) const;
@@ -40,7 +44,7 @@ class Descriptor
         void calculVecteurAttributs();
 
     private:
-        unsigned int const m_patch_size = 1;
+        unsigned int const m_patch_size;
 
         cv::Mat m_img;
 

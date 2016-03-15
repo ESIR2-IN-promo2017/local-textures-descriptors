@@ -18,7 +18,13 @@ float getPixel(cv::Mat const& mat, long i, long j)
 
 TextureDescriptor::TextureDescriptor()
 {
+}
+
+TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r)
+{
     //TODO
+    cv::Mat z = extractAttribVector(attribVector, i, j);
+    cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, r);
 }
 
 double TextureDescriptor::distance(TextureDescriptor const& rhs) const
@@ -27,13 +33,84 @@ double TextureDescriptor::distance(TextureDescriptor const& rhs) const
     return 0;
 }
 
-Descriptor::Descriptor(cv::Mat const& img)
+cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j)
+{
+    cv::Mat retAttribVector;
+    for(unsigned int it = 0; it < attribVector.size(); ++it)
+        retAttribVector.at<float>(it,1) = getPixel(attribVector[it], i, j);
+
+    return retAttribVector;
+}
+
+cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, unsigned int r)
+{
+    cv::Mat mu;
+    for(int ii = 0; ii < 2*r+1; ++ii)
+        for(int jj = 0; jj < 2*r+1; ++jj)
+            mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, i + ii - r, j + jj - r);
+
+    return mu / sum(ponderations)[0];
+}
+
+void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
+{
+    CV_Assert(A.type() == CV_32F);
+    int dim = A.rows;
+    S.create(dim, dim, CV_32F);
+
+    cv::Mat E, M; 
+    cv::eigen(A, E, M);
+
+    cv::Mat Ebis= cv::Mat::diag(E);
+
+    //assert that every eigenvalue is > 0
+    for(int i=0; i<8; i++)
+        for(int j=0; j<8; j++)
+            if(Ebis.at<float>(i,j)<0.0)
+                Ebis.at<float>(i,j)=0.0;
+
+    cv::Mat Abis= M.t()*Ebis*M;
+    for(int i = 0; i < dim; i++ ){
+        for(int j = 0; j < i; j++ )
+            S.at<float>(i,j) = 0.f;
+
+        float sum = 0.f;
+        for(int k = 0; k < i; k++ )
+        {
+            float val = S.at<float>(k,i);
+            sum += val*val;
+        }
+
+        S.at<float>(i,i) = std::sqrt(std::max(Abis.at<float>(i,i) - sum, 0.f));
+        float ival = 1.f/S.at<float>(i, i);
+
+        for(int j = i + 1; j < dim; j++ )
+        {
+            sum = 0;
+            for(int k = 0; k < i; k++ )
+                sum += S.at<float>(k, i) * S.at<float>(k, j);
+
+            S.at<float>(i, j) = (Abis.at<float>(i, j) - sum)*ival;
+        }
+    }
+    transpose(S,S);
+}
+
+/*----DESCRIPTOR----*/
+
+Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
+    m_patch_size(r)
 {
     m_descriptors = new TextureDescriptor[m_img.rows * m_img.cols];
 
     cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
     calculVecteurAttributs();
+    for(int i = 0; i < m_img.rows; ++i)
+        for(int j = 0; j < m_img.cols; ++j)
+        {
+            m_descriptors[i*m_img.cols + j] = TextureDescriptor(m_attribVector, i, j, m_ponderations, m_patch_size);
+        }
 }
 
 Descriptor::~Descriptor()
