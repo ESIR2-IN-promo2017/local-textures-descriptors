@@ -34,7 +34,11 @@ Descriptor::Descriptor(cv::Mat const& img)
     cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
     calculVecteurAttributs();
+}
 
+Descriptor::~Descriptor()
+{
+    delete[] m_descriptors;
 }
 
 TextureDescriptor Descriptor::at(unsigned int i, unsigned int j) const

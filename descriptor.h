@@ -31,6 +31,8 @@ class Descriptor
 {
     public:
         Descriptor(cv::Mat const& img);
+        ~Descriptor();
+
         TextureDescriptor at(unsigned int i, unsigned int j) const;
 
     private:
