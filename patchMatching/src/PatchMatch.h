@@ -8,13 +8,10 @@
 #include "ImageCorrespondance.h"
 
 namespace PatchMatch{
-	double getYFromRGB(cv::Mat image, int x, int y);
-	//=======================================================================================================
-	cv::Mat imageYFromRGB(cv::Mat image);
 	//=======================================================================================================
 	void attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy);
 	//=======================================================================================================
-	double distance(cv::Mat source,cv::Mat target, int sx, int sy, int tx, int ty, int patchSize, double prevDist);
+	double distanceLab(std::vector<cv::Mat> source, std::vector<cv::Mat> target, int sx, int sy, int tx, int ty, int patchSize, double prevDist);
 	//=======================================================================================================
 	cv::Mat apply(cv::Mat source, cv::Mat target, int iterations, int patchSize);
 }
