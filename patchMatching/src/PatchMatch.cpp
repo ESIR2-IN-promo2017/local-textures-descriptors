@@ -1,65 +1,53 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <cassert>
+#include <vector>
 #include "PatchMatch.h"
 #include "ImageCorrespondance.h"
 
+
 namespace PatchMatch{
-	double getYFromRGB(cv::Mat image, int x, int y){
-		int R = image.at<cv::Vec3b>(y, x)[2];
-		int G = image.at<cv::Vec3b>(y, x)[1];
-		int B = image.at<cv::Vec3b>(y, x)[0];
-
-		return MIN(255,0.299*R+0.587*G+0.11*B);
-	}
-	//=======================================================================================================
-	cv::Mat imageYFromRGB(cv::Mat image){
-		
-		cv::Mat out = cv::Mat::zeros(image.rows, image.cols,CV_64F);
-
-		for(int x=0; x < out.cols; x++) {
-			for(int y=0; y < out.rows; y++) {
-				out.at<double>(y,x) = getYFromRGB(image, x, y);
-			}
-		}
-
-		return out;
-	}
 	//=======================================================================================================
 	void attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy){
 		out.at<cv::Vec3b>(outy, outx) = source.at<cv::Vec3b>(sy,sx);
 	}
 	//=======================================================================================================
-	double distance(cv::Mat source,cv::Mat target, int sx, int sy, int tx, int ty, int patchSize, double prevDist) {
+	double distanceLab(std::vector<cv::Mat> source, std::vector<cv::Mat> target, int sx, int sy, int tx, int ty, int patchSize, double prevDist) {
 		double dist = 0.0;
 
 		//int halfSize = (int)(((double)patchSize)/2 + 0.5)-1;
 		int halfSize = patchSize/2;
 
-		if ((sx+halfSize > source.cols-1) || (sx-halfSize < 0) || 
-			(sy+halfSize > source.rows-1) || (sy-halfSize < 0) ||
-			(tx+halfSize > source.cols-1) || (tx-halfSize < 0) || 
-			(ty+halfSize > source.rows-1) || (ty-halfSize < 0))
+		if ((sx+halfSize > source[0].cols-1) || (sx-halfSize < 0) || 
+			(sy+halfSize > source[0].rows-1) || (sy-halfSize < 0) ||
+			(tx+halfSize > source[0].cols-1) || (tx-halfSize < 0) || 
+			(ty+halfSize > source[0].rows-1) || (ty-halfSize < 0))
 		{
 			dist = HUGE_VAL;
 		}
 		else
 		{
+			for(int i=-halfSize; i<=halfSize; i++){
+				for(int j=-halfSize; j<=halfSize; j++){
+					int xSource = i+sx;
+					int ySource = j+sy;
+					double YSource = source[0].at<double>(ySource, xSource);
+					double aSource = source[1].at<double>(ySource, xSource);
+					double bSource = source[2].at<double>(ySource, xSource);
 
-		 for(int i=-halfSize; i<=halfSize; i++){
-			for(int j=-halfSize; j<=halfSize; j++){
-				int xSource = i+sx;
-				int ySource = j+sy;
-				double Ysource = source.at<double>(ySource, xSource);
-				
-				int xTarget = i+tx;
-				int yTarget = j+ty;
-				double grayTarget = target.at<double>(yTarget, xTarget);
+					int xTarget = i+tx;
+					int yTarget = j+ty;
+					double YTarget = target[0].at<double>(yTarget, xTarget);
+					double aTarget = target[1].at<double>(yTarget, xTarget);
+					double bTarget = target[2].at<double>(yTarget, xTarget);
 
-				double diff = Ysource - grayTarget;
-				dist += diff*diff;
+					double diffY = YSource - YTarget;
+					double diffa = aSource - aTarget;
+					double diffb = bSource - bTarget;
+					dist += diffY*diffY + diffa*diffa + diffb*diffb;
+				}
 			}
-		}
 		}
 		if(dist <= 1e-10)
 			return 0.0;
@@ -74,9 +62,18 @@ namespace PatchMatch{
 		//patchSize = patchSize/2+0.5;
 
 		cv::Mat out = cv::Mat::zeros(target.rows, target.cols,CV_8UC3);
-    
-		cv::Mat sourceY = imageYFromRGB(source);
-		cv::Mat targetY = imageYFromRGB(target);
+
+		// Conversion en Lab, 64F, 3 canaux séparés
+		cv::Mat source2, sourceLab;
+		cv::Mat target2, targetLab;
+		std::vector<cv::Mat> sourceChannels(3), targetChannels(3);
+		cv::cvtColor(source, source2, CV_BGR2Lab);
+		cv::cvtColor(target, target2, CV_BGR2Lab);
+		source2.convertTo(sourceLab, CV_64F);
+		target2.convertTo(targetLab, CV_64F);
+		cv::split(sourceLab, sourceChannels);
+		cv::split(targetLab, targetChannels);
+
 
 		ImageCorrespondance corres(target.cols, target.rows);
 
@@ -89,7 +86,7 @@ namespace PatchMatch{
 				Vec * vector = &corres.vectors[x][y];
 				vector->x = dx;
 				vector->y = dy;
-				vector->dist = distance(sourceY, targetY, dx, dy, x, y, patchSize, HUGE_VAL);
+				vector->dist = distanceLab(sourceChannels, targetChannels, dx, dy, x, y, patchSize, HUGE_VAL);
 				
 				if (vector->dist == HUGE_VAL) {vector->x = 0; vector->y = 0; dx=dy=0;}
 				attributePixels(out, x, y, source, dx, dy);
@@ -112,7 +109,7 @@ namespace PatchMatch{
 
 						Vec * left = &corres.vectors[x-1][y];
 						
-						double distLeft = distance(sourceY, targetY, left->x, left->y, x, y, patchSize, outPtr->dist);
+						double distLeft = distanceLab(sourceChannels, targetChannels, left->x, left->y, x, y, patchSize, outPtr->dist);
 
 						if (distLeft < outPtr->dist) {
 							outPtr->x = left->x;
@@ -125,7 +122,7 @@ namespace PatchMatch{
 						}
 				
 						Vec * up = &corres.vectors[x][y-1];
-						double distUp = distance(sourceY, targetY, up->x, up->y, x, y, patchSize, outPtr->dist);
+						double distUp = distanceLab(sourceChannels, targetChannels, up->x, up->y, x, y, patchSize, outPtr->dist);
 
 						if (distUp < outPtr->dist) {
 							outPtr->x = up->x;
@@ -154,7 +151,7 @@ namespace PatchMatch{
 
 						Vec * right = &corres.vectors[x+1][y];
 						
-						double distRight = distance(sourceY, targetY, right->x, right->y, x, y, patchSize, outPtr->dist);
+						double distRight = distanceLab(sourceChannels, targetChannels, right->x, right->y, x, y, patchSize, outPtr->dist);
 
 						if (distRight < outPtr->dist) {
 							outPtr->x = right->x;
@@ -167,7 +164,7 @@ namespace PatchMatch{
 						}
 
 						Vec * down = &corres.vectors[x][y+1];
-						double distDown = distance(sourceY, targetY, down->x, down->y, x, y, patchSize, outPtr->dist);
+						double distDown = distanceLab(sourceChannels, targetChannels, down->x, down->y, x, y, patchSize, outPtr->dist);
 
 						if (distDown < outPtr->dist) {
 							outPtr->x = down->x;
@@ -213,7 +210,7 @@ namespace PatchMatch{
 						int randY = rand() % (maxY - minY) + minY;
 
 						Vec * random = &corres.vectors[randX][randY];
-						double dist = distance(sourceY, targetY, random->x, random->y, x, y, patchSize, outPtr->dist);
+						double dist = distanceLab(sourceChannels, targetChannels, random->x, random->y, x, y, patchSize, outPtr->dist);
 						if (dist < outPtr->dist) {
 							outPtr->x = random->x;
 							outPtr->y = random->y;
