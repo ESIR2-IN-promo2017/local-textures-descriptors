@@ -20,11 +20,27 @@ TextureDescriptor::TextureDescriptor()
 {
 }
 
-TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r)
+TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r):
+    m_descriptor(this->calculateSize(attribVector.size()), 1, CV_32F)
 {
-    //TODO
-    cv::Mat z = extractAttribVector(attribVector, i, j);
-    cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, r);
+    double beta = 1/sum(ponderations)[0];
+    cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, beta, r);
+
+    cv::Mat crp = cv::Mat::zeros(8,8, CV_32F);
+
+    for(unsigned int qi = 0; qi < 2*r+1; ++qi)
+        for(unsigned int qj = 0; qj < 2*r+1; ++qj)
+        {
+            cv::Mat z = extractAttribVector(attribVector, i + qi - r, j + qj - r) - mu;
+            crp += (z * z.t()) * (ponderations.at<float>(qi, qj));
+        }
+
+    crp *= beta;
+
+    cv::Mat choleskyMatrix;
+    this->Cholesky(crp, choleskyMatrix);
+
+    extractDescriptorFromCholesky(choleskyMatrix);
 }
 
 double TextureDescriptor::distance(TextureDescriptor const& rhs) const
@@ -42,14 +58,14 @@ cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attri
     return retAttribVector;
 }
 
-cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, unsigned int r)
+cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, double beta, unsigned int r)
 {
     cv::Mat mu;
-    for(int ii = 0; ii < 2*r+1; ++ii)
-        for(int jj = 0; jj < 2*r+1; ++jj)
+    for(unsigned int ii = 0; ii < 2*r+1; ++ii)
+        for(unsigned int jj = 0; jj < 2*r+1; ++jj)
             mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, i + ii - r, j + jj - r);
 
-    return mu / sum(ponderations)[0];
+    return mu * beta;
 }
 
 void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
@@ -84,7 +100,7 @@ void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
         S.at<float>(i,i) = std::sqrt(std::max(Abis.at<float>(i,i) - sum, 0.f));
         float ival = 1.f/S.at<float>(i, i);
 
-        for(int j = i + 1; j < dim; j++ )
+        for(int j = i + 1; j < dim; j++)
         {
             sum = 0;
             for(int k = 0; k < i; k++ )
@@ -94,6 +110,22 @@ void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
         }
     }
     transpose(S,S);
+}
+
+void TextureDescriptor::extractDescriptorFromCholesky(cv::Mat const& choleskyMatrix)
+{
+    unsigned int position = 0;
+    for(int col = 0; col < choleskyMatrix.cols; ++col)
+        for(int row = col; row < choleskyMatrix.rows; ++row)
+            m_descriptor.at<float>(1, position++) = choleskyMatrix.at<float>(col, row);
+}
+
+unsigned int TextureDescriptor::calculateSize(unsigned int size)
+{
+    unsigned int length = 0;
+    for(unsigned int i = size; i > 0; --i)
+        length += i;
+    return length;
 }
 
 /*----DESCRIPTOR----*/
