@@ -10,6 +10,7 @@
 #include <opencv2/contrib/contrib.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+
 template<typename T>
 T max(T const& a, T const& b)
 {
@@ -222,3 +223,37 @@ void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindo
     namedWindow(nameWindow, cv::WINDOW_NORMAL);
     imshow(nameWindow, choleskyColor);
 }
+
+
+
+cv::Mat matDescriptorToVector(const cv::Mat& matDescriptor)
+{
+    int d = 8;
+    int size = (d*(d+1)) /2;
+    cv::Mat vector(size, 1, CV_32F);
+
+    int indiceVector = 0;
+    for(int i=0; i<8; i++) {
+        for(int j=i; j<8; j++) {
+            vector.at<float>(indiceVector, 0) = matDescriptor.at<float>(i, j);
+            indiceVector++;
+        }
+    }
+    return vector;
+}
+
+
+float distanceColumnVector(const cv::Mat& vector1, const cv::Mat& vector2)
+{
+    float sum = 0.0;
+
+    if( vector1.rows != vector2.rows)
+        return 0.0;
+
+    for(int i=0; i<vector1.rows; i++) {
+        float tmp = vector1.at<float>(i, 0) - vector2.at<float>(i, 0);
+        sum += tmp * tmp;
+    }
+    return sqrt(sum);
+}
+

@@ -1,0 +1,10 @@
+
+0 - Ago : transformer ça en Lab (il n'utilise que la composante Y)
+1- benchmarker notre méthode (Diviser l'image en 10x10, et calculer les distances, et MSE)
+2- Tester le patch-match -> calcul de distance entre 2 patchs
+	Entre deux images : 
+					relier les patchs similaires (courtes distances)
+					1ère passe : forward : Regarder si les voisins corresponds (de gauche à droite)
+								 Random search : 
+					2nde passe : backward : Regarder si les voisins corresponds (de droite à gauche)
+								 Random search : 

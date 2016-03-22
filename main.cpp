@@ -1,14 +1,60 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/contrib/contrib.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
 #include <iostream>
 #include <iomanip>
 #include <limits>
+#include <numeric>
 #include <vector>
 #include "textureDescriptor.h"
 
 using namespace cv;
 using namespace std;
+
+
+std::vector<Point2f> touch_image;
+std::vector<std::vector<cv::Mat> > crp;
+
+void on_mouse( int e, int x, int y, int d, void *ptr )
+{
+    if (e == EVENT_LBUTTONDOWN )
+    {
+        if(touch_image.size() < 1 )
+        {
+ 
+	    touch_image.push_back(Point2f(float(x),float(y)));
+            cout << x << " " << y << endl;
+        }
+        else
+        {
+	  touch_image.push_back(Point2f(float(x),float(y)));
+	  cout << x << " " << y << endl;
+            cout << " Calculating distance " <<endl;
+            // Deactivate callback
+            cv::setMouseCallback("Display window", NULL, NULL);
+	    Mat S1= crp[touch_image[0].y][touch_image[0].x];
+	    Mat S2= crp[touch_image[1].y][touch_image[1].x];
+	    touch_image.clear();
+	    
+	    Mat Chol1, Chol2;
+	    Cholesky(S1, Chol1);
+	    Cholesky(S2, Chol2);
+
+	    
+	    Mat Sign1 = matDescriptorToVector(Chol1);
+	    Mat Sign2 = matDescriptorToVector(Chol2);
+
+	    cout << Sign1 << endl;
+	    cout << endl << Sign2 << endl;
+	    //cout << norm(Sign1, Sign2) << endl;
+	    
+
+	    cout << distanceColumnVector(Sign1, Sign2) << endl;
+        } 
+    }
+}
 
 
 void test_mat3x3();
@@ -54,24 +100,45 @@ int main( int argc, char** argv )
         }
     }
     float b = beta(wr);
-    std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
+    crp = Crp(vecteur, wr, b, r);
 
     //std::cout << "crp[66][100] = " << std::endl;
     //std::cout << crp[66][100] << std::endl;
 
+    /*
     int cptErr=0;
     Mat choleskyMatrixAll;
     for(unsigned int i=2*r; i<rows-2*r; i++){
       for(unsigned int j=2*r; j<cols-2*r; j++){
-	cptErr+=Cholesky(crp[i][j], choleskyMatrixAll);
+        cptErr+=Cholesky(crp[i][j], choleskyMatrixAll);
       }
-    } 
+    }
     std::cout<< "nombre de patchs à problème: "<< cptErr<< std::endl;
+    */
+
+    cv::Mat mat = matDescriptorToVector(crp[20][20]);
+    cv::Mat mat2 = matDescriptorToVector(crp[20][21]);
+
+    std::cout << distanceColumnVector(mat, mat2) << std::endl;
+
+    
+    imshow("image", image);
+
+    setMouseCallback("image",on_mouse, NULL );
+    //  Press "Escape button" to exit
+    while(1)
+    {
+        int key=cvWaitKey(10);
+        if(key==27) break;
+    }
+
+    //Mat crp1, crp2;
+    //Mat S1 = matDescriptorToVector(); // signature clic1
+    //Mat S2 = matDescriptorToVector(); // signature clic2
+    
+    //cout << "distance :" << distanceColumnVector(S1, S2) << endl; 
 
     /*
-    Mat choleskyMatrix1;
-    Cholesky(crp[66][100], choleskyMatrix1);
-
     std::cout << "cholesky[66][100] = " << std::endl;
     std::cout << choleskyMatrix1 << std::endl;
 
@@ -149,7 +216,6 @@ int main( int argc, char** argv )
 
 
     //test_mat3x3();
-
 
 
     return 0;
