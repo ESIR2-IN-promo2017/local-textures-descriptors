@@ -58,9 +58,9 @@ double TextureDescriptor::distance(TextureDescriptor const& rhs) const
     return std::sqrt(sum);
 }
 
-cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j)
+cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attribVector, long i, long j)
 {
-    cv::Mat retAttribVector;
+    cv::Mat retAttribVector(attribVector.size(), 1, CV_32F);
     for(unsigned int it = 0; it < attribVector.size(); ++it)
         retAttribVector.at<float>(it,1) = getPixel(attribVector[it], i, j);
 
@@ -72,7 +72,7 @@ cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVecto
     cv::Mat mu;
     for(unsigned int ii = 0; ii < 2*r+1; ++ii)
         for(unsigned int jj = 0; jj < 2*r+1; ++jj)
-            mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, i + ii - r, j + jj - r);
+            mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, (long) i + ii - r, (long) j + jj - r);
 
     return mu * beta;
 }
@@ -147,8 +147,8 @@ Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
     cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
     calculVecteurAttributs();
-    for(int i = 0; i < m_img.rows; ++i)
-        for(int j = 0; j < m_img.cols; ++j)
+    for(unsigned int i = 0; i < (unsigned int) m_img.rows; ++i)
+        for(unsigned int j = 0; j < (unsigned int) m_img.cols; ++j)
         {
             m_descriptors[i*m_img.cols + j] = new TextureDescriptor(m_attribVector, i, j, m_ponderations, m_patch_size);
         }
@@ -177,6 +177,7 @@ void Descriptor::calculPonderations()
         sigma_carre = 1;
 
     float Z = 0.0;
+    std::cout << "OK" << std::endl;
     for (int i = -m_patch_size; i <= (long) m_patch_size; i++)
         for (int j = -m_patch_size; j <= (long) m_patch_size; j++)
         {
@@ -185,6 +186,7 @@ void Descriptor::calculPonderations()
             m_ponderations.at<float>(i + m_patch_size, j + m_patch_size) = w;
             Z += w;
         }
+    std::cout << "OK" << std::endl;
 
     m_ponderations /= Z;
     m_beta = 1/Z;
