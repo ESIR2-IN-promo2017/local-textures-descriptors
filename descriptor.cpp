@@ -140,9 +140,11 @@ unsigned int TextureDescriptor::calculateSize(unsigned int size)
 /*----DESCRIPTOR----*/
 
 Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
-    m_patch_size(r)
+    m_patch_size(r),
+    m_h(img.rows),
+    m_w(img.cols)
 {
-    m_descriptors = new TextureDescriptor[m_img.rows * m_img.cols];
+    m_descriptors = new TextureDescriptor[img.rows * img.cols];
 
     cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
@@ -161,7 +163,7 @@ Descriptor::~Descriptor()
 
 TextureDescriptor Descriptor::at(unsigned int i, unsigned int j) const
 {
-    return m_descriptors[i*m_img.cols + j];
+    return m_descriptors[i*m_w + j];
 }
 
 void Descriptor::calculPonderations()

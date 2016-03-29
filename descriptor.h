@@ -38,9 +38,26 @@ class TextureDescriptor
 class Descriptor
 {
     public:
+        /**
+         * @brief constructs the Descriptor
+         *
+         * @param img: image to descript
+         * @param r: radius of the patch (the patch will be of size 2*r+1)
+         */
         Descriptor(cv::Mat const& img, unsigned int r);
+        /**
+         * @brief Descriptor destructor
+         */
         ~Descriptor();
 
+        /**
+         * @brief gets a TextureDescriptor
+         *
+         * @param i: row number
+         * @param j: column number
+         *
+         * @return the TextureDescriptor corresponding to the patch around (i,j)
+         */
         TextureDescriptor at(unsigned int i, unsigned int j) const;
 
     private:
@@ -49,6 +66,8 @@ class Descriptor
 
     private:
         unsigned int const m_patch_size;
+        unsigned int m_w;
+        unsigned int m_h;
 
         cv::Mat m_img;
 
@@ -56,6 +75,7 @@ class Descriptor
         float m_beta;
 
         std::vector<cv::Mat> m_attribVector;
+
 
         TextureDescriptor* m_descriptors;
 };
