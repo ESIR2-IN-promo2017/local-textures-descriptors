@@ -69,7 +69,7 @@ cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attri
 
 cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, double beta, unsigned int r)
 {
-    cv::Mat mu;
+    cv::Mat mu(attribVector.size(), 1, CV_32F);
     for(unsigned int ii = 0; ii < 2*r+1; ++ii)
         for(unsigned int jj = 0; jj < 2*r+1; ++jj)
             mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, (long) i + ii - r, (long) j + jj - r);
@@ -150,7 +150,7 @@ Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
     for(unsigned int i = 0; i < (unsigned int) m_img.rows; ++i)
         for(unsigned int j = 0; j < (unsigned int) m_img.cols; ++j)
         {
-            m_descriptors[i*m_img.cols + j] = new TextureDescriptor(m_attribVector, i, j, m_ponderations, m_patch_size);
+            m_descriptors.push_back(new TextureDescriptor(m_attribVector, i, j, m_ponderations, m_patch_size));
         }
 }
 
