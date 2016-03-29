@@ -77,5 +77,5 @@ class Descriptor
         std::vector<cv::Mat> m_attribVector;
 
 
-        TextureDescriptor* m_descriptors;
+        std::vector<TextureDescriptor *> m_descriptors;
 };
