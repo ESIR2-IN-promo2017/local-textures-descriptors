@@ -13,7 +13,8 @@ int main(int argc,char **argv){
 	target = cv::imread( "../data/sonne2.png");
 
 
-	cv::Mat patchMatch = PatchMatch::apply(source,target, 5, 5);
+	PatchMatch p;
+	cv::Mat patchMatch = p.apply(source,target, 5, 5);
 	imwrite( "../result/patchMATCH.png", patchMatch );
 
 	return 0; 
