@@ -6,9 +6,6 @@
 #include "PatchMatchY.h"
 
 
-void PatchMatchY::attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy){
-	out.at<cv::Vec3b>(outy, outx) = source.at<cv::Vec3b>(sy,sx);
-}
 
 double PatchMatchY::distanceY(const cv::Mat& sourceY, const cv::Mat& targetY, int sx, int sy, int tx, int ty, int patchSize) {
 		double dist = 0.0;

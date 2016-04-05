@@ -6,10 +6,6 @@
 #include "PatchMatchLab.h"
 
 
-void PatchMatchLab::attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy){
-	out.at<cv::Vec3b>(outy, outx) = source.at<cv::Vec3b>(sy,sx);
-}
-
 double PatchMatchLab::distanceLab(const std::vector<cv::Mat>& source, const std::vector<cv::Mat>& target, int sx, int sy, int tx, int ty, int patchSize) {
 		double dist = 0.0;
 

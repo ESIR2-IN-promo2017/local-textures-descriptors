@@ -6,10 +6,6 @@
 #include "PatchMatchDescriptor.h"
 
 
-void PatchMatchDescriptor::attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy){
-	out.at<cv::Vec3b>(outy, outx) = source.at<cv::Vec3b>(sy,sx);
-}
-
 
 double PatchMatchDescriptor::distanceDescriptor(const Descriptor& desSource, const Descriptor& desTarget, int sx, int sy, int tx, int ty) {
 	double dist = 0.0;

@@ -13,12 +13,11 @@
 
 
 
-class PatchMatchLab{
+class PatchMatchLab : public AbstractPatchMatch{
 public:
-	cv::Mat apply(cv::Mat source, cv::Mat target, int iterations, int patchSize);
+	static cv::Mat apply(cv::Mat source, cv::Mat target, int iterations, int patchSize);
 
 private:
-	void attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy);
 	/**
 	 * Calcule la distance Lab entre 2 pixels
 	 * @param source : tableau de 3 images (L,a,b) de l'image source
@@ -29,7 +28,7 @@ private:
 	 * @param ty : coordonnée y dans l'image cible
 	 * @param patchSize : taille du patch (largeur)
 	 */
-	double distanceLab(const std::vector<cv::Mat>& source, const std::vector<cv::Mat>& target, int sx, int sy, int tx, int ty, int patchSize);
+	static double distanceLab(const std::vector<cv::Mat>& source, const std::vector<cv::Mat>& target, int sx, int sy, int tx, int ty, int patchSize);
 	
 };
 

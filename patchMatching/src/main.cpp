@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <iostream> 
+#include "PatchMatchY.h"
 #include "PatchMatchLab.h"
 #include "PatchMatchDescriptor.h"
 
@@ -14,20 +15,17 @@ int main(int argc,char **argv){
 	target = cv::imread( "../data/sonne2.png");
 
 	// Distance Y
-	PatchMatchLab pY;
-	cv::Mat patchMatchY = pY.apply(source,target, 5, 5);
+	cv::Mat patchMatchY = PatchMatchY::apply(source,target, 5, 5);
 	imwrite( "../result/patchMatch_Y.png", patchMatchY );
 
 	// Distance Lab
-	PatchMatchLab pLab;
-	cv::Mat patchMatchLab = pLab.apply(source,target, 5, 5);
+	cv::Mat patchMatchLab = PatchMatchLab::apply(source,target, 5, 5);
 	imwrite( "../result/patchMatch_Lab.png", patchMatchLab );
 
 
 
 	// Distance entre descripteurs
-	PatchMatchDescriptor pDescripteurs;
-	cv::Mat patchMatchDescripteurs = pDescripteurs.apply(source,target, 5, 5);
+	cv::Mat patchMatchDescripteurs = PatchMatchDescriptor::apply(source,target, 5, 5);
 	imwrite( "../result/patchMatch_descripteurs.png", patchMatchDescripteurs);
 
 	return 0; 

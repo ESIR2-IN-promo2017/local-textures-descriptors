@@ -1,8 +1,8 @@
 #ifndef ABSTRACT_PATCH_MATCH_H
 #define ABSTRACT_PATCH_MATCH_H
 
-
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 struct Vec{
@@ -36,7 +36,9 @@ public:
 	}
 };
 
-
-
+class AbstractPatchMatch{
+public:
+	static void attributePixels(cv::Mat out, int outx, int outy, cv::Mat source, int sx, int sy);
+};
 
 #endif
