@@ -5,6 +5,8 @@
  * @version 1.0
  * @date 2016-03-08
  */
+#ifndef DESCRIPTOR_H
+#define DESCRIPTOR_H
 
 #include <iostream>
 #include <vector>
@@ -79,3 +81,5 @@ class Descriptor
 
         std::vector<TextureDescriptor *> m_descriptors;
 };
+
+#endif

@@ -3,7 +3,7 @@ LIBS= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_contrib
 FLAGS= -std=c++11 -Wall -pedantic -DDEBUG -g -O3
 PROJECT_NAME=patchmatch.out
 
-objects=PatchMatch.o main.o descriptor.o
+objects=PatchMatchDescriptor.o PatchMatchLab.o PatchMatchY.o main.o descriptor.o
 
 all: $(objects)
 	$(CC) -o $(PROJECT_NAME) $^ $(LIBS)
