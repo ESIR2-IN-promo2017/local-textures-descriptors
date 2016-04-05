@@ -15,45 +15,31 @@
 using namespace cv;
 using namespace std;
 
-
+Descriptor* des;
 std::vector<Point2f> touch_image;
-std::vector<std::vector<cv::Mat> > crp;
 
 void on_mouse( int e, int x, int y, int d, void *ptr )
 {
     if (e == EVENT_LBUTTONDOWN )
     {
+        cout << "(" << x << " " << y  << ")" << endl;
         if(touch_image.size() < 1 )
         {
  
-	    touch_image.push_back(Point2f(float(x),float(y)));
-            cout << x << " " << y << endl;
+            touch_image.push_back(Point2f(float(x),float(y)));
         }
         else
         {
-	  touch_image.push_back(Point2f(float(x),float(y)));
-	  cout << x << " " << y << endl;
+            touch_image.push_back(Point2f(float(x),float(y)));
             cout << " Calculating distance " <<endl;
             // Deactivate callback
             cv::setMouseCallback("Display window", NULL, NULL);
-	    Mat S1= crp[touch_image[0].y][touch_image[0].x];
-	    Mat S2= crp[touch_image[1].y][touch_image[1].x];
-	    touch_image.clear();
-	    
-	    Mat Chol1, Chol2;
-	    Cholesky(S1, Chol1);
-	    Cholesky(S2, Chol2);
 
-	    
-	    Mat Sign1 = matDescriptorToVector(Chol1);
-	    Mat Sign2 = matDescriptorToVector(Chol2);
+            TextureDescriptor signature1 = des->at(touch_image[0].y, touch_image[0].x);
+            TextureDescriptor signature2 = des->at(touch_image[1].y, touch_image[1].x);
+            touch_image.clear();
 
-	    cout << Sign1 << endl;
-	    cout << endl << Sign2 << endl;
-	    //cout << norm(Sign1, Sign2) << endl;
-	    
-
-	    cout << distanceColumnVector(Sign1, Sign2) << endl;
+            cout << "Distance : " << signature1.distance(signature2) << endl;
         } 
     }
 }
@@ -74,8 +60,6 @@ int main( int argc, char** argv )
 
     Mat image;
     image = imread(name, CV_LOAD_IMAGE_COLOR);   // Read the file
-    int rows = image.rows;
-    int cols = image.cols;
 
     if(! image.data )                              // Check for invalid input
     {
@@ -88,10 +72,11 @@ int main( int argc, char** argv )
 
     unsigned int r = 10; //patch size
     Descriptor imageDescriptor(imageFloat, r);
+    des = &imageDescriptor;
     TextureDescriptor signature1 = imageDescriptor.at(20,20);
     TextureDescriptor signature2 = imageDescriptor.at(20,21);
 
-    std::cout << signature1.distance(signature2) << std::endl;
+    std::cout << "Distance : " << signature1.distance(signature2) << std::endl;
 
     
     imshow("image", image);
