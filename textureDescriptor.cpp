@@ -162,7 +162,13 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
         {
             //qi in [0, 2r+1[ (therefore qi in patch width)
             //so qi-r in [-r, r]
-            mu += /*Wr.at<float>(qi, qj)* */ Zq(Z, i + qi-r, j + qj-r);
+            unsigned int indexI = i + qi;
+            unsigned int indexJ = j + qj;
+            if( indexI < r ) { indexI +=(r-indexI); }
+            if( indexJ < r ) { indexJ +=(r-indexJ); }
+            if( indexI >= Z[0].rows+r ) { indexI -=(indexI -1- Z[0].rows+r); }
+            if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ -1- Z[0].cols+r); }
+            mu += /*Wr.at<float>(qi, qj)* */ Zq(Z, indexI-r, indexJ-r);
         }
 
     //mu *= beta;
@@ -183,10 +189,10 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
     std::vector<std::vector<cv::Mat> > Crp_vector;
 
     //TODO: edge gestion
-    for(unsigned int i = r; i < imgSize.height - r; ++i)
+    for(unsigned int i = 0; i < imgSize.height; ++i)
     {
         std::vector<cv::Mat> Crp_vector_ligne;
-        for(unsigned int j = r; j < imgSize.width - r; ++j)
+        for(unsigned int j = 0; j < imgSize.width; ++j)
         {
             cv::Mat mu = MUr(Z, Wr, beta, r, i, j);
             //std::cout << mu << std::endl;
@@ -196,7 +202,13 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
             for(unsigned int qi = 0; qi < 2*r+1; ++qi)
                 for(unsigned int qj = 0; qj < 2*r+1; ++qj)
                 {
-                    cv::Mat zq = Zq(Z, i + qi-r, j + qj-r) - mu;
+                    unsigned int indexI = i + qi;
+                    unsigned int indexJ = j + qj;
+                    if( indexI < r ) { indexI +=(r-indexI); }
+                    if( indexJ < r ) { indexJ +=(r-indexJ); }
+                    if( indexI >= Z[0].rows+r ) { indexI -=(indexI -1- Z[0].rows+r); }
+                    if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ -1- Z[0].cols+r); }
+                    cv::Mat zq = Zq(Z, indexI-r, indexJ-r) - mu;
                     //std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
                     //std::cout << zq << std::endl;
 
