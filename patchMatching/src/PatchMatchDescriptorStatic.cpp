@@ -51,14 +51,6 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 
 	// Creation des 2 descripteurs
 	// Les calculs se font a ce moment
-	/*std::cout << "patchSize : " << patchSize << std::endl;
-	std::cout << "1" << std::endl;
-	std::cout << "1.5" << std::endl;
-	std::cout << "2" << std::endl;
-
-	Descriptor desSource(source, patchSize/2);
-	Descriptor desTarget(target, patchSize/2);
-	*/
 	cv::Mat imageFloat1, imageLAB1;
 	cv::Mat imageFloat2, imageLAB2;
     source.convertTo(imageFloat1, CV_32FC3, 1.0/255.0, 0.0);
@@ -69,15 +61,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 	std::array<cv::Mat, 8> vecteur1(Z(imageLAB1));
 	std::array<cv::Mat, 8> vecteur2(Z(imageLAB2));
 
-
-
     cv::Mat wr = Wr(patchSize/2);
 
-    for(unsigned int i=0;i<patchSize/2;i++) {
-        for(unsigned int j=0;j<patchSize/2;j++) {
-            wr.at<float>(i,j) = 1;
-        }
-    }
     std::vector<std::vector<cv::Mat> > crp1;
     std::vector<std::vector<cv::Mat> > crp2;
     crp1 = Crp(vecteur1, wr, beta(wr), patchSize/2);
