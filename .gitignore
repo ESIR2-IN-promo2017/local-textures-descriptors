@@ -9,5 +9,6 @@
 
 #log files
 *.log
+vgcore.*
 
 papiers/*

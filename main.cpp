@@ -62,7 +62,7 @@ void descriptor_object(cv::Mat& image)
 
     std::cout << "Distance : " << signature1.distance(signature2) << std::endl;
 
-    
+#ifndef DEBUG 
     imshow("image", image);
 
     setMouseCallback("image",on_mouse_object, NULL );
@@ -72,6 +72,7 @@ void descriptor_object(cv::Mat& image)
         int key=cvWaitKey(10);
         if(key==27) break;
     }
+#endif
 
     //Mat crp1, crp2;
     //Mat S1 = matDescriptorToVector(); // signature clic1

@@ -26,10 +26,10 @@ TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, u
     double beta = 1/sum(ponderations)[0];
     cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, beta, r);
 
-    cv::Mat crp = cv::Mat::zeros(8,8, CV_32F);
+    cv::Mat crp = cv::Mat::zeros(attribVector.size(), attribVector.size(), CV_32F);
 
-    for(unsigned int qi = 0; qi < 2*r+1; ++qi)
-        for(unsigned int qj = 0; qj < 2*r+1; ++qj)
+    for(long qi = 0; qi < 2*r+1; ++qi)
+        for(long qj = 0; qj < 2*r+1; ++qj)
         {
             cv::Mat z = extractAttribVector(attribVector, i + qi - r, j + qj - r) - mu;
             crp += (z * z.t()) * (ponderations.at<float>(qi, qj));
@@ -55,6 +55,7 @@ double TextureDescriptor::distance(TextureDescriptor const& rhs) const
         float tmp = this->m_descriptor.at<float>(i, 0) - rhs.m_descriptor.at<float>(i, 0);
         sum += tmp * tmp;
     }
+
     return std::sqrt(sum);
 }
 
@@ -142,7 +143,9 @@ unsigned int TextureDescriptor::calculateSize(unsigned int size)
 Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
     m_patch_size(r),
     m_w(img.cols),
-    m_h(img.rows)
+    m_h(img.rows),
+    m_attribVector(),
+    m_descriptors()
 {
     cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
@@ -164,12 +167,13 @@ TextureDescriptor Descriptor::at(unsigned int i, unsigned int j) const
 {
     i %= m_h;
     j %= m_w;
+
     return *m_descriptors[i*m_w + j];
 }
 
 void Descriptor::calculPonderations()
 {
-    m_ponderations = cv::Mat(m_patch_size, m_patch_size, CV_32F);
+    m_ponderations = cv::Mat(2*m_patch_size+1, 2*m_patch_size+1, CV_32FC1);
 
     float sigma_carre = std::pow((float) m_patch_size / 3.0, 2);
 
@@ -177,7 +181,6 @@ void Descriptor::calculPonderations()
         sigma_carre = 1;
 
     float Z = 0.0;
-    std::cout << "OK" << std::endl;
     for (int i = -m_patch_size; i <= (long) m_patch_size; i++)
         for (int j = -m_patch_size; j <= (long) m_patch_size; j++)
         {
@@ -186,7 +189,6 @@ void Descriptor::calculPonderations()
             m_ponderations.at<float>(i + m_patch_size, j + m_patch_size) = w;
             Z += w;
         }
-    std::cout << "OK" << std::endl;
 
     m_ponderations /= Z;
     m_beta = 1/Z;
@@ -194,7 +196,9 @@ void Descriptor::calculPonderations()
 
 void Descriptor::calculVecteurAttributs()
 {
-    std::vector<cv::Mat> Lab;
+    cv::Mat Lab[3];
+    for(unsigned int channel = 0; channel < 3; ++channel)
+        Lab[channel] = cv::Mat(m_img.rows, m_img.cols, CV_32F);
     cv::split(m_img, Lab);
 
     cv::Mat dLdx, dLdy, d2Ldx2, d2Ldy2, d2Ldxdy;
