@@ -41,7 +41,7 @@ TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, u
     double beta = 1/sum(ponderations)[0];
     cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, beta, r);
 
-    cv::Mat crp = cv::Mat::zeros(8,8, CV_32F);
+    cv::Mat crp = cv::Mat::zeros(attribVector.size(), attribVector.size(), CV_32F);
 
     for(long qi = 0; qi < 2*r+1; ++qi)
         for(long qj = 0; qj < 2*r+1; ++qj)
@@ -247,7 +247,7 @@ void Descriptor::calculPonderations()
 #ifdef DEBUG
     std::cout << "--> Descriptor::calculPonderations()" << std::endl;
 #endif
-    m_ponderations = cv::Mat(m_patch_size, m_patch_size, CV_32FC1);
+    m_ponderations = cv::Mat(2*m_patch_size+1, 2*m_patch_size+1, CV_32FC1);
 
     float sigma_carre = std::pow((float) m_patch_size / 3.0, 2);
 
@@ -276,14 +276,11 @@ void Descriptor::calculVecteurAttributs()
 #ifdef DEBUG
     std::cout << "--> Descriptor::calculVecteurAttributs()" << std::endl;
 #endif
-    /*
     cv::Mat Lab[3];
     for(unsigned int channel = 0; channel < 3; ++channel)
         Lab[channel] = cv::Mat(m_img.rows, m_img.cols, CV_32F);
     cv::split(m_img, Lab);
-    //*/
 
-    /*
     cv::Mat dLdx, dLdy, d2Ldx2, d2Ldy2, d2Ldxdy;
 
     cv::Sobel(Lab[0], dLdx, CV_32F, 1, 0, CV_SCHARR);
@@ -300,12 +297,7 @@ void Descriptor::calculVecteurAttributs()
     m_attribVector.push_back(abs(d2Ldx2));
     m_attribVector.push_back(abs(d2Ldy2));
     m_attribVector.push_back(abs(d2Ldxdy));
-    //*/
 
-    /*
-    for(unsigned int i = 0; i < 8; ++i)
-        m_attribVector.push_back(cv::Mat(m_img.rows, m_img.cols, CV_32F));
-    //*/
 #ifdef DEBUG
     std::cout << "<-- Descriptor::calculVecteurAttributs()" << std::endl;
 #endif
