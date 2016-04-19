@@ -68,7 +68,7 @@ cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attri
     return retAttribVector;
 }
 
-cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, double beta, unsigned int r)
+cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, double beta, unsigned int r)
 {
     cv::Mat mu(attribVector.size(), 1, CV_32F);
     for(unsigned int ii = 0; ii < 2*r+1; ++ii)

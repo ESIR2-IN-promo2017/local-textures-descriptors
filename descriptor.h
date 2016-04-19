@@ -5,6 +5,8 @@
  * @version 1.0
  * @date 2016-03-08
  */
+#ifndef DESCRIPTOR_H
+#define DESCRIPTOR_H
 
 #include <iostream>
 #include <vector>
@@ -24,7 +26,7 @@ class TextureDescriptor
         TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r);
 
         cv::Mat extractAttribVector(std::vector<cv::Mat> const& attribVector, long i, long j);
-        cv::Mat calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, double beta, unsigned int r);
+        cv::Mat calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, double beta, unsigned int r);
         void Cholesky(cv::Mat const& A, cv::Mat & S);
         void extractDescriptorFromCholesky(cv::Mat const& choleskyMatrix);
 
@@ -79,3 +81,5 @@ class Descriptor
 
         std::vector<TextureDescriptor *> m_descriptors;
 };
+
+#endif
