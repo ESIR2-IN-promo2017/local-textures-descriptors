@@ -91,7 +91,7 @@ int main( int argc, char** argv )
     TextureDescriptor signature1 = imageDescriptor.at(20,20);
     TextureDescriptor signature2 = imageDescriptor.at(20,21);
 
-    std::cout << signature1.distance(signature2) << std::endl;
+    std::cout << "distance : " << signature1.distance(signature2) << std::endl;
 
 #ifndef DEBUG 
     imshow("image", image);
