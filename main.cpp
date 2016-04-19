@@ -93,7 +93,7 @@ int main( int argc, char** argv )
 
     std::cout << signature1.distance(signature2) << std::endl;
 
-    
+#ifndef DEBUG 
     imshow("image", image);
 
     setMouseCallback("image",on_mouse, NULL );
@@ -103,6 +103,7 @@ int main( int argc, char** argv )
         int key=cvWaitKey(10);
         if(key==27) break;
     }
+#endif
 
     //Mat crp1, crp2;
     //Mat S1 = matDescriptorToVector(); // signature clic1
