@@ -37,7 +37,6 @@ TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, u
 
     crp *= beta;
 
-    std::cout << "ok" << std::endl;
     cv::Mat choleskyMatrix;
     this->Cholesky(crp, choleskyMatrix);
 
