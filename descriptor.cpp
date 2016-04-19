@@ -10,34 +10,19 @@
 
 float getPixel(cv::Mat const& mat, long i, long j)
 {
-#ifdef DEBUG
-    std::cout << "--> getPixel(mat=" << &mat << ", i=" << i << ", j=" << j << ")" << std::endl;
-#endif
     unsigned int ii = (unsigned int) std::max(0l, std::min(i, (long) mat.rows));
     unsigned int jj = (unsigned int) std::max(0l, std::min(j, (long) mat.cols));
 
     return mat.at<float>(ii,jj);
-#ifdef DEBUG
-    std::cout << "<-- getPixel()" << std::endl;
-#endif
 }
 
 TextureDescriptor::TextureDescriptor()
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::TextureDescriptor()" << std::endl;
-#endif
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::TextureDescriptor()" << std::endl;
-#endif
 }
 
 TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r):
     m_descriptor(this->calculateSize(attribVector.size()), 1, CV_32F)
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::TextureDescriptor(attribVector=" << &attribVector << ", i=" << i << ", j=" << j << ", ponderations=" << &ponderations << ", r=" << r << ")" << std::endl;
-#endif
     double beta = 1/sum(ponderations)[0];
     cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, beta, r);
 
@@ -57,16 +42,10 @@ TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, u
     this->Cholesky(crp, choleskyMatrix);
 
     extractDescriptorFromCholesky(choleskyMatrix);
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::TextureDescriptor()" << std::endl;
-#endif
 }
 
 double TextureDescriptor::distance(TextureDescriptor const& rhs) const
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::distance(this=" << this << ", rhs=" << &rhs << ")" << std::endl;
-#endif
     //TODO
     float sum = 0.0;
 
@@ -77,48 +56,31 @@ double TextureDescriptor::distance(TextureDescriptor const& rhs) const
         float tmp = this->m_descriptor.at<float>(i, 0) - rhs.m_descriptor.at<float>(i, 0);
         sum += tmp * tmp;
     }
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::distance()" << std::endl;
-#endif
+
     return std::sqrt(sum);
 }
 
 cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attribVector, long i, long j)
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::extractAttribVector(attribVector=" << &attribVector << ", i=" << i << ", j=" << j << ")" << std::endl;
-#endif
     cv::Mat retAttribVector(attribVector.size(), 1, CV_32F);
     for(unsigned int it = 0; it < attribVector.size(); ++it)
         retAttribVector.at<float>(it,1) = getPixel(attribVector[it], i, j);
 
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::extractAttribVector()" << std::endl;
-#endif
     return retAttribVector;
 }
 
 cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat ponderations, double beta, unsigned int r)
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::calculMoyenne(attribVector=" << &attribVector << ", i=" << i << ", j=" << j << ", ponderations=" << &ponderations << ", beta=" << beta << ", r=" << r << ")" << std::endl;
-#endif
     cv::Mat mu(attribVector.size(), 1, CV_32F);
     for(unsigned int ii = 0; ii < 2*r+1; ++ii)
         for(unsigned int jj = 0; jj < 2*r+1; ++jj)
             mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, (long) i + ii - r, (long) j + jj - r);
 
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::calculMoyenne()" << std::endl;
-#endif
     return mu * beta;
 }
 
 void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::Cholesky(A=" << &A << ", S=" << &S << ")" << std::endl;
-#endif
     CV_Assert(A.type() == CV_32F);
     int dim = A.rows;
     S.create(dim, dim, CV_32F);
@@ -159,36 +121,21 @@ void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
         }
     }
     transpose(S,S);
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::Cholesky()" << std::endl;
-#endif
 }
 
 void TextureDescriptor::extractDescriptorFromCholesky(cv::Mat const& choleskyMatrix)
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::extractDescriptorFromCholesky(choleskyMatrix=" << &choleskyMatrix << ")" << std::endl;
-#endif
     unsigned int position = 0;
     for(int col = 0; col < choleskyMatrix.cols; ++col)
         for(int row = col; row < choleskyMatrix.rows; ++row)
             m_descriptor.at<float>(1, position++) = choleskyMatrix.at<float>(col, row);
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::extractDescriptorFromCholesky()" << std::endl;
-#endif
 }
 
 unsigned int TextureDescriptor::calculateSize(unsigned int size)
 {
-#ifdef DEBUG
-    std::cout << "--> TextureDescriptor::calculateSize(size=" << size << ")" << std::endl;
-#endif
     unsigned int length = 0;
     for(unsigned int i = size; i > 0; --i)
         length += i;
-#ifdef DEBUG
-    std::cout << "<-- TextureDescriptor::calculateSize()" << std::endl;
-#endif
     return length;
 }
 
@@ -201,9 +148,6 @@ Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
     m_attribVector(),
     m_descriptors()
 {
-#ifdef DEBUG
-    std::cout << "--> Descriptor::Descriptor(img=" << &img << ", r=" << r <<")" << std::endl;
-#endif
     cvtColor(img, m_img, CV_BGR2Lab);
     calculPonderations();
     calculVecteurAttributs();
@@ -212,41 +156,24 @@ Descriptor::Descriptor(cv::Mat const& img, unsigned int r):
         {
             m_descriptors.push_back(new TextureDescriptor(m_attribVector, i, j, m_ponderations, m_patch_size));
         }
-#ifdef DEBUG
-    std::cout << "<-- Descriptor::Descriptor()" << std::endl;
-#endif
 }
 
 Descriptor::~Descriptor()
 {
-#ifdef DEBUG
-    std::cout << "--> Descriptor::~Descriptor()" << std::endl;
-#endif
     for(auto descriptor: m_descriptors)
         delete descriptor;
-#ifdef DEBUG
-    std::cout << "<-- Descriptor::~Descriptor()" << std::endl;
-#endif
 }
 
 TextureDescriptor Descriptor::at(unsigned int i, unsigned int j) const
 {
-#ifdef DEBUG
-    std::cout << "--> Descriptor::at(i=" << i << ", j=" << j << ")" << std::endl;
-#endif
     i %= m_h;
     j %= m_w;
-#ifdef DEBUG
-    std::cout << "<-- Descriptor::at()" << std::endl;
-#endif
+
     return *m_descriptors[i*m_w + j];
 }
 
 void Descriptor::calculPonderations()
 {
-#ifdef DEBUG
-    std::cout << "--> Descriptor::calculPonderations()" << std::endl;
-#endif
     m_ponderations = cv::Mat(2*m_patch_size+1, 2*m_patch_size+1, CV_32FC1);
 
     float sigma_carre = std::pow((float) m_patch_size / 3.0, 2);
@@ -266,16 +193,10 @@ void Descriptor::calculPonderations()
 
     m_ponderations /= Z;
     m_beta = 1/Z;
-#ifdef DEBUG
-    std::cout << "<-- Descriptor::calculPonderations()" << std::endl;
-#endif
 }
 
 void Descriptor::calculVecteurAttributs()
 {
-#ifdef DEBUG
-    std::cout << "--> Descriptor::calculVecteurAttributs()" << std::endl;
-#endif
     cv::Mat Lab[3];
     for(unsigned int channel = 0; channel < 3; ++channel)
         Lab[channel] = cv::Mat(m_img.rows, m_img.cols, CV_32F);
@@ -297,8 +218,4 @@ void Descriptor::calculVecteurAttributs()
     m_attribVector.push_back(abs(d2Ldx2));
     m_attribVector.push_back(abs(d2Ldy2));
     m_attribVector.push_back(abs(d2Ldxdy));
-
-#ifdef DEBUG
-    std::cout << "<-- Descriptor::calculVecteurAttributs()" << std::endl;
-#endif
 }
