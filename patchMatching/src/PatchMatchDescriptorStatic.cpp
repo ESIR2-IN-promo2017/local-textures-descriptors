@@ -8,15 +8,15 @@
 
 
 
-double PatchMatchDescriptorStatic::distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int cols, int rows) {
+double PatchMatchDescriptorStatic::distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int r) {
 	double dist = 0.0;
 
-	int halfSize = 0;
+	unsigned int halfSize = r;
 
-	if ((sx+halfSize > cols-1) || (sx-halfSize < 0) || 
-		(sy+halfSize > rows-1) || (sy-halfSize < 0) ||
-		(tx+halfSize > cols-1) || (tx-halfSize < 0) || 
-		(ty+halfSize > rows-1) || (ty-halfSize < 0))
+	if ((sx+halfSize > crp1[0].size()-1) || (sx-halfSize < 0) || 
+		(sy+halfSize > crp1.size()   -1) || (sy-halfSize < 0) ||
+		(tx+halfSize > crp1[0].size()-1) || (tx-halfSize < 0) || 
+		(ty+halfSize > crp1.size()   -1) || (ty-halfSize < 0))
 	{
 		return HUGE_VAL;
 	}
@@ -101,10 +101,10 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 			int dy = rand() % (source.rows - 1);
 
 			Vec * vector = &corres.vectors[x][y];
-			vector->x = dx;
-			vector->y = dy;
+			vector->x = x;
+			vector->y = y;
 
-			vector->dist = distanceDescriptor(crp1, crp2, dx, dy, x, y, source.cols, source.rows);
+			vector->dist = distanceDescriptor(crp1, crp2, dx, dy, x, y, patchSize/2);
 
 			if (vector->dist == HUGE_VAL) {vector->x = 0; vector->y = 0; dx=dy=0;}
 			attributePixels(out, x, y, source, dx, dy);
@@ -128,7 +128,7 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 					Vec * left = &corres.vectors[x-1][y];
 
 					//std::cout << "left->x : " << left->x << std::endl;
-					double distLeft = distanceDescriptor(crp1, crp2, left->x, left->y, x, y, source.cols, source.rows);
+					double distLeft = distanceDescriptor(crp1, crp2, left->x, left->y, x, y, patchSize/2);
 
 					if (distLeft < outPtr->dist) {
 						outPtr->x = left->x;
@@ -142,7 +142,7 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 
 					Vec * up = &corres.vectors[x][y-1];
 					//std::cout << "up->x : " << up->x << std::endl;
-					double distUp = distanceDescriptor(crp1, crp2, up->x, up->y, x, y, source.cols, source.rows);
+					double distUp = distanceDescriptor(crp1, crp2, up->x, up->y, x, y, patchSize/2);
 
 					if (distUp < outPtr->dist) {
 						outPtr->x = up->x;
@@ -171,7 +171,7 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 
 					Vec * right = &corres.vectors[x+1][y];
 
-					double distRight = distanceDescriptor(crp1, crp2, right->x, right->y, x, y, source.cols, source.rows);
+					double distRight = distanceDescriptor(crp1, crp2, right->x, right->y, x, y, patchSize/2);
 
 					if (distRight < outPtr->dist) {
 						outPtr->x = right->x;
@@ -184,7 +184,7 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 					}
 
 					Vec * down = &corres.vectors[x][y+1];
-					double distDown = distanceDescriptor(crp1, crp2, down->x, down->y, x, y, source.cols, source.rows);
+					double distDown = distanceDescriptor(crp1, crp2, down->x, down->y, x, y, patchSize/2);
 
 					if (distDown < outPtr->dist) {
 						outPtr->x = down->x;
@@ -230,7 +230,7 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 					int randY = rand() % (maxY - minY) + minY;
 
 					Vec * random = &corres.vectors[randX][randY];
-					double dist = distanceDescriptor(crp1, crp2, random->x, random->y, x, y, source.cols, source.rows);
+					double dist = distanceDescriptor(crp1, crp2, random->x, random->y, x, y, patchSize/2);
 					if (dist < outPtr->dist) {
 						outPtr->x = random->x;
 						outPtr->y = random->y;

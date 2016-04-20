@@ -28,7 +28,7 @@ private:
 	 * @param tx : coordonnée x dans l'image cible
 	 * @param ty : coordonnée y dans l'image cible
 	 */
-	static double distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int, int);
+	static double distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int r);
 };
 
 

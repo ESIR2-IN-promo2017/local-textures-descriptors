@@ -166,8 +166,8 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
             unsigned int indexJ = j + qj;
             if( indexI < r ) { indexI +=(r-indexI); }
             if( indexJ < r ) { indexJ +=(r-indexJ); }
-            if( indexI >= Z[0].rows+r ) { indexI -=(indexI -1- Z[0].rows+r); }
-            if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ -1- Z[0].cols+r); }
+            if( indexI >= Z[0].rows+r ) { indexI -=(indexI - Z[0].rows+r); }
+            if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ - Z[0].cols+r); }
             mu += /*Wr.at<float>(qi, qj)* */ Zq(Z, indexI-r, indexJ-r);
         }
 
@@ -206,8 +206,8 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
                     unsigned int indexJ = j + qj;
                     if( indexI < r ) { indexI +=(r-indexI); }
                     if( indexJ < r ) { indexJ +=(r-indexJ); }
-                    if( indexI >= Z[0].rows+r ) { indexI -=(indexI -1- Z[0].rows+r); }
-                    if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ -1- Z[0].cols+r); }
+                    if( indexI >= Z[0].rows+r ) { indexI -=(indexI - Z[0].rows+r); }
+                    if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ - Z[0].cols+r); }
                     cv::Mat zq = Zq(Z, indexI-r, indexJ-r) - mu;
                     //std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
                     //std::cout << zq << std::endl;

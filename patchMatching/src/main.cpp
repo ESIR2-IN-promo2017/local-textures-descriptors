@@ -13,7 +13,7 @@ int main(int argc,char **argv){
 	cv::Mat source, target;
 	
 	source = cv::imread( "../data/sonne1.png");
-	target = cv::imread( "../data/sonne2.png");
+	target = cv::imread( "../data/sonne1.png");
 /*
 	// Distance Y
 	cv::Mat patchMatchY = PatchMatchY::apply(source,target, 5, 5);
