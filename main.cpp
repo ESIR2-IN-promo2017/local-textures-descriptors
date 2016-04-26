@@ -51,16 +51,15 @@ void descriptor_object(cv::Mat& image)
     image.convertTo(imageFloat, CV_32FC3, 1.0/255.0, 0.0);
 
     unsigned int r = 10; //patch size
-    cout << "1" << endl;
+    cout << "Creating Descriptor..." << flush;
     Descriptor imageDescriptor(imageFloat, r);
     des = &imageDescriptor;
-    cout << "2" << endl;
-    TextureDescriptor signature1 = imageDescriptor.at(20,20);
-    cout << "3" << endl;
-    TextureDescriptor signature2 = imageDescriptor.at(20,21);
-    cout << "4" << endl;
-
-    std::cout << "Distance : " << signature1.distance(signature2) << std::endl;
+    cout << "done" << endl << "signature1...";
+    TextureDescriptor signature1 = imageDescriptor.at(50,50);
+    cout << "done" << endl << "signature2...";
+    TextureDescriptor signature2 = imageDescriptor.at(50,51);
+    cout << "done" << endl << "distance..." << endl;
+    cout << "Distance: " << signature1.distance(signature2) << endl;
 
 #ifndef DEBUG 
     imshow("image", image);
@@ -131,8 +130,8 @@ void descriptor_static(cv::Mat& image)
 
 
     float b = beta(wr);
-    crp = Crp(vecteur, wr, b, r);
 
+    crp = Crp(vecteur, wr, b, r);
     std::cout << "Crp rows : " << crp.size() << std::endl;
     std::cout << "Crp cols : " << crp[0].size() << std::endl;
 
