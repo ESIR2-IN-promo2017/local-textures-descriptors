@@ -51,15 +51,15 @@ void descriptor_object(cv::Mat& image)
     image.convertTo(imageFloat, CV_32FC3, 1.0/255.0, 0.0);
 
     unsigned int r = 10; //patch size
-    cout << "Creating Descriptor...";
+    cout << "Creating Descriptor..." << flush;
     Descriptor imageDescriptor(imageFloat, r);
     des = &imageDescriptor;
     cout << "done" << endl << "signature1...";
-    TextureDescriptor signature1 = imageDescriptor.at(20,20);
+    TextureDescriptor signature1 = imageDescriptor.at(50,50);
     cout << "done" << endl << "signature2...";
-    TextureDescriptor signature2 = imageDescriptor.at(20,21);
+    TextureDescriptor signature2 = imageDescriptor.at(50,51);
     cout << "done" << endl << "distance..." << endl;
-    std::cout << "Distance: " << signature1.distance(signature2) << std::endl;
+    cout << "Distance: " << signature1.distance(signature2) << endl;
 
 #ifndef DEBUG 
     imshow("image", image);
