@@ -260,7 +260,7 @@ float distanceColumnVector(const cv::Mat& vector1, const cv::Mat& vector2)
     float sum = 0.0;
 
     if( vector1.rows != vector2.rows)
-        return 0.0;
+        return HUGE_VAL;
 
     for(int i=0; i<vector1.rows; i++) {
         float tmp = vector1.at<float>(i, 0) - vector2.at<float>(i, 0);
