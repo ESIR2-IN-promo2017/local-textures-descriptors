@@ -183,6 +183,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
     std::cout << "Wr : " << Wr.at<float>(0,0) << std::endl;
     std::cout << "beta : " << beta << std::endl;
     std::cout << "r : " << r << std::endl;
+    std::cout << "Calculating Crp..." << std::flush;
 
     cv::Size imgSize = Z[0].size();
 
@@ -223,7 +224,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
         }
         Crp_vector.push_back(Crp_vector_ligne);
     }
-
+    std::cout << "done" << std::endl;
     return Crp_vector;
 }
 

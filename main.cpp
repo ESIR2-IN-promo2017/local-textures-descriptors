@@ -130,8 +130,8 @@ void descriptor_static(cv::Mat& image)
 
 
     float b = beta(wr);
-    crp = Crp(vecteur, wr, b, r);
 
+    crp = Crp(vecteur, wr, b, r);
     std::cout << "Crp rows : " << crp.size() << std::endl;
     std::cout << "Crp cols : " << crp[0].size() << std::endl;
 
