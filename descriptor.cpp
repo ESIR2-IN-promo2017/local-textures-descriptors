@@ -23,7 +23,7 @@ TextureDescriptor::TextureDescriptor()
 TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, unsigned int r):
     m_descriptor(this->calculateSize(attribVector.size()), 1, CV_32F)
 {
-    double beta = 1/sum(ponderations)[0];
+    float beta = 1/sum(ponderations)[0];
     cv::Mat mu = calculMoyenne(attribVector, i, j, ponderations, beta, r);
 
     cv::Mat crp = cv::Mat::zeros(attribVector.size(), attribVector.size(), CV_32F);
@@ -41,6 +41,7 @@ TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, u
     this->Cholesky(crp, choleskyMatrix);
 
     extractDescriptorFromCholesky(choleskyMatrix);
+
 }
 
 double TextureDescriptor::distance(TextureDescriptor const& rhs) const
@@ -66,16 +67,16 @@ double TextureDescriptor::distance(TextureDescriptor const& rhs) const
 
 cv::Mat TextureDescriptor::extractAttribVector(std::vector<cv::Mat> const& attribVector, long i, long j)
 {
-    cv::Mat retAttribVector(attribVector.size(), 1, CV_32F);
+  cv::Mat retAttribVector(attribVector.size(), 1, CV_32F, cv::Scalar(0));
     for(unsigned int it = 0; it < attribVector.size(); ++it)
-        retAttribVector.at<float>(it,1) = getPixel(attribVector[it], i, j);
+        retAttribVector.at<float>(it,0) = getPixel(attribVector[it], i, j);
 
     return retAttribVector;
 }
 
 cv::Mat TextureDescriptor::calculMoyenne(std::vector<cv::Mat> const& attribVector, unsigned int i, unsigned int j, cv::Mat const& ponderations, double beta, unsigned int r)
 {
-    cv::Mat mu(attribVector.size(), 1, CV_32F);
+  cv::Mat mu(attribVector.size(), 1, CV_32F, cv::Scalar(0));
     for(unsigned int ii = 0; ii < 2*r+1; ++ii)
         for(unsigned int jj = 0; jj < 2*r+1; ++jj)
             mu += ponderations.at<float>(ii,jj) * extractAttribVector(attribVector, (long) i + ii - r, (long) j + jj - r);

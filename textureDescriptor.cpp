@@ -183,6 +183,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
     std::cout << "Wr : " << Wr.at<float>(0,0) << std::endl;
     std::cout << "beta : " << beta << std::endl;
     std::cout << "r : " << r << std::endl;
+    std::cout << "Calculating Crp..." << std::flush;
 
     cv::Size imgSize = Z[0].size();
 
@@ -209,8 +210,8 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
                     if( indexI >= Z[0].rows+r ) { indexI -=(indexI -1- Z[0].rows+r); }
                     if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ -1- Z[0].cols+r); }
                     cv::Mat zq = Zq(Z, indexI-r, indexJ-r) - mu;
-                    //std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
-                    //std::cout << zq << std::endl;
+                    std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
+                    std::cout << zq << std::endl;
 
                     Crp += (zq*zq.t())*(Wr.at<float>(qi,qj));
                 }
@@ -223,7 +224,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
         }
         Crp_vector.push_back(Crp_vector_ligne);
     }
-
+    std::cout << "done" << std::endl;
     return Crp_vector;
 }
 
@@ -260,7 +261,7 @@ float distanceColumnVector(const cv::Mat& vector1, const cv::Mat& vector2)
     float sum = 0.0;
 
     if( vector1.rows != vector2.rows)
-        return 0.0;
+        return HUGE_VAL;
 
     for(int i=0; i<vector1.rows; i++) {
         float tmp = vector1.at<float>(i, 0) - vector2.at<float>(i, 0);

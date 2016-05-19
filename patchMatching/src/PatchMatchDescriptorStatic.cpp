@@ -8,10 +8,10 @@
 
 
 
-double PatchMatchDescriptorStatic::distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int cols, int rows) {
+double PatchMatchDescriptorStatic::distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int cols, int rows, int patchSize) {
 	double dist = 0.0;
 
-	int halfSize = 0;
+	int halfSize = patchSize/2;
 
 	if ((sx+halfSize > cols-1) || (sx-halfSize < 0) || 
 		(sy+halfSize > rows-1) || (sy-halfSize < 0) ||
@@ -42,6 +42,57 @@ double PatchMatchDescriptorStatic::distanceDescriptor(const std::vector<std::vec
 	return dist;
 }
 
+double PatchMatchDescriptorStatic::distanceY(const cv::Mat& source, const cv::Mat& target, int sx, int sy, int tx, int ty, int patchSize) {
+		double dist = 0.0;
+
+		//int halfSize = (int)(((double)patchSize)/2 + 0.5)-1;
+		int halfSize = patchSize/2;
+
+		if ((sx+halfSize > source.cols-1) || (sx-halfSize < 0) || 
+			(sy+halfSize > source.rows-1) || (sy-halfSize < 0) ||
+			(tx+halfSize > source.cols-1) || (tx-halfSize < 0) || 
+			(ty+halfSize > source.rows-1) || (ty-halfSize < 0))
+		{
+			dist = HUGE_VAL;
+		}
+		else
+		{
+			for(int i=-halfSize; i<=halfSize; i++){
+				for(int j=-halfSize; j<=halfSize; j++){
+					int xSource = i+sx;
+					int ySource = j+sy;
+					double BSource = source.at<cv::Vec3b>(ySource, xSource).val[0];
+					double GSource = source.at<cv::Vec3b>(ySource, xSource).val[1];
+					double RSource = source.at<cv::Vec3b>(ySource, xSource).val[2];
+
+					int xTarget = i+tx;
+					int yTarget = j+ty;
+					double BTarget = target.at<cv::Vec3b>(yTarget, xTarget).val[0];
+					double GTarget = target.at<cv::Vec3b>(yTarget, xTarget).val[1];
+					double RTarget = target.at<cv::Vec3b>(yTarget, xTarget).val[2];
+
+					double diffB = BSource - BTarget;
+					double diffG = GSource - GTarget;
+					double diffR = RSource - RTarget;
+					dist += diffB*diffB + diffG*diffG + diffR*diffR;
+
+
+					//double diffY = YSource - YTarget;
+					//dist += diffY*diffY;
+				}
+			}
+		}
+		//if(dist <= 1e-10)
+		//	return 0.0;
+		return dist;
+	}
+
+/*
+void distance2points(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int patchSize) {
+{
+
+}*/
+
 cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int iterations, int patchSize) {
 	assert(iterations > 0 && "Iterations must be a strictly positive integer\n");
 	assert(patchSize >= 3 && (patchSize & 1) && "Patch size must be at least 3 and odd\n");
@@ -51,14 +102,6 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 
 	// Creation des 2 descripteurs
 	// Les calculs se font a ce moment
-	/*std::cout << "patchSize : " << patchSize << std::endl;
-	std::cout << "1" << std::endl;
-	std::cout << "1.5" << std::endl;
-	std::cout << "2" << std::endl;
-
-	Descriptor desSource(source, patchSize/2);
-	Descriptor desTarget(target, patchSize/2);
-	*/
 	cv::Mat imageFloat1, imageLAB1;
 	cv::Mat imageFloat2, imageLAB2;
     source.convertTo(imageFloat1, CV_32FC3, 1.0/255.0, 0.0);
@@ -69,15 +112,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 	std::array<cv::Mat, 8> vecteur1(Z(imageLAB1));
 	std::array<cv::Mat, 8> vecteur2(Z(imageLAB2));
 
-
-
     cv::Mat wr = Wr(patchSize/2);
 
-    for(unsigned int i=0;i<patchSize/2;i++) {
-        for(unsigned int j=0;j<patchSize/2;j++) {
-            wr.at<float>(i,j) = 1;
-        }
-    }
     std::vector<std::vector<cv::Mat> > crp1;
     std::vector<std::vector<cv::Mat> > crp2;
     crp1 = Crp(vecteur1, wr, beta(wr), patchSize/2);
@@ -95,8 +131,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 	ImageCorrespondance corres(target.cols, target.rows);
 
 	// INITIALIZATION - uniform random assignment
-	for(int x=patchSize/2; x < out.cols-patchSize/2; x++) {
-		for(int y=patchSize/2; y < out.rows-patchSize/2; y++) {
+	for(int y=patchSize/2; y < out.rows-patchSize/2; y++) {
+		for(int x=patchSize/2; x < out.cols-patchSize/2; x++) {
 			int dx = rand() % (source.cols - 1);
 			int dy = rand() % (source.rows - 1);
 
@@ -104,12 +140,23 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 			vector->x = dx;
 			vector->y = dy;
 
-			vector->dist = distanceDescriptor(crp1, crp2, dx, dy, x, y, source.cols, source.rows);
+			vector->dist = distanceDescriptor(crp1, crp2, dx, dy, x, y, source.cols, source.rows, patchSize);
+			//vector->dist = distanceY(source, target, dx, dy, x, y, patchSize);
 
-			if (vector->dist == HUGE_VAL) {vector->x = 0; vector->y = 0; dx=dy=0;}
+			//if (vector->dist == HUGE_VAL) {vector->x = 0; vector->y = 0; dx=dy=0;}
+
 			attributePixels(out, x, y, source, dx, dy);
 		}
 	}
+
+	double d1 = distanceDescriptor(crp1, crp2, 108, 191, 235, 174, source.cols, source.rows, patchSize);
+	double d2 = distanceDescriptor(crp1, crp2, 108, 191, 128, 142, source.cols, source.rows, patchSize);
+	double d3 = distanceDescriptor(crp1, crp2, 108, 191, 249, 29, source.cols, source.rows, patchSize);
+
+	std::cout << "d1 : " << d1 << std::endl;
+	std::cout << "d2 : " << d2 << std::endl;
+	std::cout << "d3 : " << d3 << std::endl;
+
 
 	bool forwardSearch = true;
 
@@ -121,14 +168,17 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 		int nbChange = 0;
 		if(forwardSearch) {
 			// Forward propagation - compare left, center and up
-			for(int x = patchSize/2; x < out.cols-patchSize/2; x++) {
-				for(int y = patchSize/2; y < out.rows-patchSize/2; y++) {
+			for(int y = patchSize/2; y < out.rows-patchSize/2; y++) {
+				for(int x = patchSize/2; x < out.cols-patchSize/2; x++) {
 					outPtr = &corres.vectors[x][y];
 
 					Vec * left = &corres.vectors[x-1][y];
 
-					//std::cout << "left->x : " << left->x << std::endl;
-					double distLeft = distanceDescriptor(crp1, crp2, left->x, left->y, x, y, source.cols, source.rows);
+
+					// distance entre descripteurs
+					//double distLeft = distanceDescriptor(crp1, crp2, left->x, left->y, x, y, source.cols, source.rows, patchSize);
+					// distance sur Y
+					double distLeft = distanceY(source, target, left->x, left->y, x, y, patchSize);
 
 					if (distLeft < outPtr->dist) {
 						outPtr->x = left->x;
@@ -142,7 +192,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 
 					Vec * up = &corres.vectors[x][y-1];
 					//std::cout << "up->x : " << up->x << std::endl;
-					double distUp = distanceDescriptor(crp1, crp2, up->x, up->y, x, y, source.cols, source.rows);
+					//double distUp = distanceDescriptor(crp1, crp2, up->x, up->y, x, y, source.cols, source.rows, patchSize);
+					double distUp = distanceY(source, target, up->x, up->y, x, y, patchSize);
 
 					if (distUp < outPtr->dist) {
 						outPtr->x = up->x;
@@ -165,13 +216,14 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 		}
 		else {
 			// Backward propagation - compare right, center and down
-			for(int x = out.cols-patchSize/2; x >= patchSize/2; x--) {
-				for(int y = out.rows-patchSize/2; y >= patchSize/2; y--) {	
+			for(int y = out.rows-patchSize/2; y >= patchSize/2; y--) {	
+				for(int x = out.cols-patchSize/2; x >= patchSize/2; x--) {
 					outPtr = &corres.vectors[x][y];
 
 					Vec * right = &corres.vectors[x+1][y];
 
-					double distRight = distanceDescriptor(crp1, crp2, right->x, right->y, x, y, source.cols, source.rows);
+					//double distRight = distanceDescriptor(crp1, crp2, right->x, right->y, x, y, source.cols, source.rows, patchSize);
+					double distRight = distanceY(source, target, right->x, right->y, x, y, patchSize);
 
 					if (distRight < outPtr->dist) {
 						outPtr->x = right->x;
@@ -184,7 +236,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 					}
 
 					Vec * down = &corres.vectors[x][y+1];
-					double distDown = distanceDescriptor(crp1, crp2, down->x, down->y, x, y, source.cols, source.rows);
+					//double distDown = distanceDescriptor(crp1, crp2, down->x, down->y, x, y, source.cols, source.rows, patchSize);
+					double distDown = distanceY(source, target, down->x, down->y, x, y, patchSize);
 
 					if (distDown < outPtr->dist) {
 						outPtr->x = down->x;
@@ -206,8 +259,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 
 		forwardSearch = !forwardSearch;
 
-		for(int x = patchSize/2; x < target.cols-patchSize/2; x++) {
-			for(int y = patchSize/2; y < target.rows-patchSize/2; y++) {
+		for(int y = patchSize/2; y < target.rows-patchSize/2; y++) {
+			for(int x = patchSize/2; x < target.cols-patchSize/2; x++) {
 
 				int radius = source.rows > source.cols ? source.rows : source.cols;
 
@@ -230,7 +283,8 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
 					int randY = rand() % (maxY - minY) + minY;
 
 					Vec * random = &corres.vectors[randX][randY];
-					double dist = distanceDescriptor(crp1, crp2, random->x, random->y, x, y, source.cols, source.rows);
+					//double dist = distanceDescriptor(crp1, crp2, random->x, random->y, x, y, source.cols, source.rows, patchSize);
+					double dist = distanceY(source, target, random->x, random->y, x, y, patchSize);
 					if (dist < outPtr->dist) {
 						outPtr->x = random->x;
 						outPtr->y = random->y;

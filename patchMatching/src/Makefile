@@ -1,6 +1,6 @@
 CC=g++
 LIBS= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_contrib
-FLAGS= -std=c++14 -Wall -pedantic -DDEBUG -g -O3
+FLAGS= -std=c++11 -Wall -pedantic -DDEBUG -g -O3
 PROJECT_NAME=patchmatch.out
 
 objects=AbstractPatchMatch.o PatchMatchDescriptorStatic.o PatchMatchDescriptor.o PatchMatchLab.o PatchMatchY.o main.o descriptor.o textureDescriptor.o
