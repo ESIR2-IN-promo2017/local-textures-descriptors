@@ -46,7 +46,11 @@ TextureDescriptor::TextureDescriptor(std::vector<cv::Mat> const& attribVector, u
 double TextureDescriptor::distance(TextureDescriptor const& rhs) const
 {
     //TODO
+    std::cout << "--> TextureDescriptor::distance(this=" << this << ", rhs=" << &rhs << ")" << std::endl;
     float sum = 0.0;
+
+    std::cout << "this: " << this->m_descriptor.t() << std::endl;
+    std::cout << "rhs: " << rhs.m_descriptor.t() << std::endl;
 
     if(this->m_descriptor.rows != rhs.m_descriptor.rows)
         return 0.0;
@@ -56,6 +60,7 @@ double TextureDescriptor::distance(TextureDescriptor const& rhs) const
         sum += tmp * tmp;
     }
 
+    std::cout << "<-- TextureDescriptor::distance(return = sqrt(" << sum << ")" << std::endl;
     return std::sqrt(sum);
 }
 
