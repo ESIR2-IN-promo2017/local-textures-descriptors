@@ -13,7 +13,43 @@
 
 using namespace cv;
 
+void callback(int e, int x, int y, int d, void* data)
+{
+    std::vector<std::vector<cv::Mat> >* crp = (std::vector<std::vector<cv::Mat> >*)data;
+    if (e == EVENT_LBUTTONDOWN ) {
+        Mat output(crp->size(), (*crp)[0].size(), CV_8U);
 
+        int iBase = y;
+        int jBase = x;
+        double seuilDistance = 180;
+
+        Mat Chol1;
+        Mat sign1;
+
+
+        Cholesky((*crp)[iBase][jBase], Chol1);
+        sign1 = matDescriptorToVector(Chol1); // signature clic1
+
+
+        for(unsigned int i=0; i<crp->size(); i++) {
+            for(unsigned int j=0; j<(*crp)[0].size(); j++) {
+                Mat Chol2, sign2;
+                Cholesky((*crp)[i][j], Chol2);
+                sign2 = matDescriptorToVector(Chol2); // signature clic2
+                //std::cout << "dist : " << distanceColumnVector(sign1, sign2) << std::endl;
+
+                double dist = distanceColumnVector(sign1, sign2);
+                if( dist < seuilDistance) {
+                    output.at<uchar>(i, j) = 255;
+                }
+                else {
+                    output.at<uchar>(i, j) = 0;
+                }
+            }
+        }
+        imshow("dest", output);
+    }
+}
 void show_distance(cv::Mat& image)
 {
     Mat imageFloat, imageLab;
@@ -30,41 +66,23 @@ void show_distance(cv::Mat& image)
 
 
 
-    Mat output(image.rows, image.cols, CV_8U);
 
-    int iBase = 40;
-    int jBase = 70;
-    double seuil = 200;
+    //imwrite("output.png", output);
+    std::cout << crp.size() << std::endl;
+    std::cout << image.rows << std::endl;
+    std::cout << crp[0].size() << std::endl;
+    std::cout << image.cols << std::endl;
 
-    Mat Chol1;
-    Mat sign1;
+    imshow("image", image);
+    imshow("dest", image);
 
-
-    Cholesky(crp[iBase][jBase], Chol1);
-    sign1 = matDescriptorToVector(Chol1); // signature clic1
-
-
-    for(int i=0; i<image.rows; i++) {
-        for(int j=0; j<image.cols; j++) {
-            Mat Chol2, sign2;
-            Cholesky(crp[i][j], Chol2);
-            sign2 = matDescriptorToVector(Chol2); // signature clic2
-            //std::cout << j << " : " << distanceColumnVector(sign1, sign2) << std::endl;
-            
-            double dist = distanceColumnVector(sign1, sign2);
-            if( dist < seuil) {
-                output.at<uchar>(i, j) = 255;
-            }
-            else {
-                output.at<uchar>(i, j) = 0;
-            }
-        }
+    setMouseCallback("image",callback, &crp );
+    //  Press "Escape button" to exit
+    while(1)
+    {
+        int key=cvWaitKey(10);
+        if(key==27) break;
     }
-
-    imwrite("output.png", output);
-
-
-
 }
 
 
