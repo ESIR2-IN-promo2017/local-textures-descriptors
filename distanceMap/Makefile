@@ -1,7 +1,7 @@
 CC=g++
 LIBS= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_contrib
 FLAGS= -std=c++11 -Wall -Os
-PROJECT_NAME=distanceMap
+PROJECT_NAME=distanceMap.out
 
 objects=main.o textureDescriptor.o
 
