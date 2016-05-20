@@ -30,6 +30,7 @@ void callback(int e, int x, int y, int d, void* data)
         Cholesky((*crp)[iBase][jBase], Chol1);
         sign1 = matDescriptorToVector(Chol1); // signature clic1
 
+        const int TAILLE = 8;
 
         for(unsigned int i=0; i<crp->size(); i++) {
             for(unsigned int j=0; j<(*crp)[0].size(); j++) {
@@ -48,6 +49,7 @@ void callback(int e, int x, int y, int d, void* data)
             }
         }
         imshow("dest", output);
+        imwrite("output.png", output);
     }
 }
 void show_distance(cv::Mat& image)
@@ -59,7 +61,7 @@ void show_distance(cv::Mat& image)
 
     unsigned int r = 10; //patch size
 
-    std::array<cv::Mat, 8> vecteur(Z(imageFloat));
+    std::array<cv::Mat, TAILLE> vecteur(Z(imageFloat));
     cv::Mat wr = Wr((int)r);
     float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
@@ -73,8 +75,10 @@ void show_distance(cv::Mat& image)
     std::cout << crp[0].size() << std::endl;
     std::cout << image.cols << std::endl;
 
+
     imshow("image", image);
     imshow("dest", image);
+
 
     setMouseCallback("image",callback, &crp );
     //  Press "Escape button" to exit

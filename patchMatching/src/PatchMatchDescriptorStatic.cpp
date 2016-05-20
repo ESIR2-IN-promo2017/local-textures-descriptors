@@ -7,7 +7,6 @@
 #include "../../textureDescriptor.h"
 
 
-
 double PatchMatchDescriptorStatic::distanceDescriptor(const std::vector<std::vector<cv::Mat> >& crp1, const std::vector<std::vector<cv::Mat> >& crp2, int sx, int sy, int tx, int ty, int cols, int rows, int patchSize) {
 	double dist = 0.0;
 
@@ -108,9 +107,9 @@ cv::Mat PatchMatchDescriptorStatic::apply(cv::Mat source, cv::Mat target, int it
     cvtColor(imageFloat1, imageLAB1, CV_BGR2Lab);
     target.convertTo(imageFloat2, CV_32FC3, 1.0/255.0, 0.0);
     cvtColor(imageFloat2, imageLAB2, CV_BGR2Lab);
-    // Array of 8 matrix
-	std::array<cv::Mat, 8> vecteur1(Z(imageLAB1));
-	std::array<cv::Mat, 8> vecteur2(Z(imageLAB2));
+    // Array of  matrix
+	std::array<cv::Mat, TAILLE> vecteur1(Z(imageLAB1));
+	std::array<cv::Mat, TAILLE> vecteur2(Z(imageLAB2));
 
     cv::Mat wr = Wr(patchSize/2);
 

@@ -14,6 +14,7 @@
 
 using namespace cv;
 using namespace std;
+const int TAILLE = 8;
 
 Descriptor* des;
 std::vector<std::vector<cv::Mat> > crp;
@@ -125,7 +126,7 @@ void descriptor_static(cv::Mat& image)
 
     unsigned int r = 10; //patch size
 
-    std::array<cv::Mat, 8> vecteur(Z(imageLab));
+    std::array<cv::Mat, TAILLE> vecteur(Z(imageLab));
     cv::Mat wr = Wr((int)r);
 
 
@@ -210,7 +211,7 @@ void qudrillage_image(Mat& image)
 
     unsigned int r = 10; //patch size
 
-    std::array<cv::Mat, 8> vecteur(Z(imageLab));
+    std::array<cv::Mat, TAILLE> vecteur(Z(imageLab));
     cv::Mat wr = Wr((int)r);
     float b = beta(wr);
     crp = Crp(vecteur, wr, b, r);
