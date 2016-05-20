@@ -14,7 +14,6 @@
 
 using namespace cv;
 using namespace std;
-const int TAILLE = 8;
 
 Descriptor* des;
 std::vector<std::vector<cv::Mat> > crp;
