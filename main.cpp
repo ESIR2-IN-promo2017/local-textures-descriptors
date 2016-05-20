@@ -148,44 +148,6 @@ void descriptor_static(cv::Mat& image)
     }
 }
 
-
-void show_distance(cv::Mat& image)
-{
-    Mat imageFloat, imageLab;
-    image.convertTo(imageFloat, CV_32FC3, 1.0/255.0, 0.0);
-    cvtColor(imageFloat, imageLab, CV_BGR2Lab);
-
-    unsigned int r = 10; //patch size
-
-    std::array<cv::Mat, 8> vecteur(Z(imageLab));
-    cv::Mat wr = Wr((int)r);
-    float b = beta(wr);
-    crp = Crp(vecteur, wr, b, r);
-
-
-    int iBase = 30;
-    int jBase = 30;
-    int nb = 32;
-
-    Mat Chol1;
-    Mat sign1;
-
-
-    Cholesky(crp[iBase][jBase], Chol1);
-    sign1 = matDescriptorToVector(Chol1); // signature clic1
-
-
-    cout << "distances :" << endl;
-    for(int j=0; j<nb; j++) {
-        Mat Chol2, sign2;
-        Cholesky(crp[iBase][jBase+j], Chol2);
-        sign2 = matDescriptorToVector(Chol2); // signature clic2
-        std::cout << j << " : " << distanceColumnVector(sign1, sign2) << std::endl;
-    }
-
-
-}
-
 void qudrillage_image(Mat& image);
 
 int main( int argc, char** argv )
@@ -214,8 +176,7 @@ int main( int argc, char** argv )
         std::cout << "\n-------------------------------------" << std::endl;
         std::cout << "1 - Descriptor object" << std::endl;
         std::cout << "2 - Descriptor static" << std::endl;
-        std::cout << "3 - Distance" << std::endl;
-        std::cout << "4 - Quadrillage" << std::endl;
+        std::cout << "3 - Quadrillage" << std::endl;
         std::cout << "5 - Quitter"<< std::endl;
         std::cout << "-------------------------------------" << std::endl;
 
@@ -230,9 +191,6 @@ int main( int argc, char** argv )
                 descriptor_static(image);
                 break;
             case 3:
-                show_distance(image);
-                break;
-            case 4:
                 qudrillage_image(image);
                 break;
             default :

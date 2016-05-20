@@ -190,10 +190,10 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
     std::vector<std::vector<cv::Mat> > Crp_vector;
 
     //TODO: edge gestion
-    for(unsigned int i = 0; i < imgSize.height; ++i)
+    for(int i = 0; i < imgSize.height; ++i)
     {
         std::vector<cv::Mat> Crp_vector_ligne;
-        for(unsigned int j = 0; j < imgSize.width; ++j)
+        for(int j = 0; j < imgSize.width; ++j)
         {
             cv::Mat mu = MUr(Z, Wr, beta, r, i, j);
             //std::cout << mu << std::endl;
@@ -210,8 +210,8 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
                     if( indexI >= Z[0].rows+r ) { indexI -=(indexI -1- Z[0].rows+r); }
                     if( indexJ >= Z[0].cols+r ) { indexJ -=(indexJ -1- Z[0].cols+r); }
                     cv::Mat zq = Zq(Z, indexI-r, indexJ-r) - mu;
-                    std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
-                    std::cout << zq << std::endl;
+                    //std::cout << "Zq [" << qi << "," << qj << "]" << std::endl;
+                    //std::cout << zq << std::endl;
 
                     Crp += (zq*zq.t())*(Wr.at<float>(qi,qj));
                 }
