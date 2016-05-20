@@ -13,7 +13,6 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-const int TAILLE = 8;
 
 class TextureDescriptor
 {

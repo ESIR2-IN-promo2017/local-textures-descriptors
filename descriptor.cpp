@@ -7,6 +7,7 @@
  */
 
 #include "descriptor.h"
+const int TAILLE = 8;
 
 float getPixel(cv::Mat const& mat, long i, long j)
 {
