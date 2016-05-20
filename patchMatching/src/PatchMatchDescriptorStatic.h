@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "AbstractPatchMatch.h"
-
+const int TAILLE = 8;
 
 
 

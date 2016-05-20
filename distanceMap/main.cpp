@@ -12,7 +12,7 @@
 #include "../textureDescriptor.h"
 
 using namespace cv;
-const int taille = 8;
+const int TAILLE = 8;
 
 void show_distance(cv::Mat& image)
 {
@@ -23,7 +23,7 @@ void show_distance(cv::Mat& image)
 
     unsigned int r = 10; //patch size
 
-    std::array<cv::Mat, taille> vecteur(Z(imageFloat));
+    std::array<cv::Mat, TAILLE> vecteur(Z(imageFloat));
     cv::Mat wr = Wr((int)r);
     float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
