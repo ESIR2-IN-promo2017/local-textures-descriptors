@@ -96,8 +96,8 @@ void TextureDescriptor::Cholesky(cv::Mat const& A, cv::Mat & S)
     cv::Mat Ebis= cv::Mat::diag(E);
 
     //assert that every eigenvalue is > 0
-    for(int i=0; i<8; i++)
-        for(int j=0; j<8; j++)
+    for(int i=0; i<TAILLE; i++)
+        for(int j=0; j<TAILLE; j++)
             if(Ebis.at<float>(i,j)<0.0)
                 Ebis.at<float>(i,j)=0.0;
 

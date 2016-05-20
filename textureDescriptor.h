@@ -5,6 +5,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+const int TAILLE = 8;
 //TODO: gestion des bords
 
 /*
@@ -37,7 +38,7 @@ int Cholesky(cv::Mat const& A, cv::Mat & S);
  *
  * @return le vecteur [ L a b |dL/dx| |dL/dy| |d²L/dx²| |d²L/dy²| |d²L/dxdy| ] pour toute l'image
  */
-std::array<cv::Mat, 8> Z(cv::Mat const& img);
+std::array<cv::Mat, TAILLE> Z(cv::Mat const& img);
 
 /**
 * @brief calcule la matrice des distances du patch
@@ -66,7 +67,7 @@ float beta(cv::Mat const& Wr);
  *
  * @return: le vecteur [ L(p) a(p) b(p) |dL(p)/dx| |dL(p)/dy| |d²L(p)/dx²| |d²L(p)/dy²| |d²L(p)/dxdy| ] pour le pixel p = (i,j)
  */
-inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z, unsigned int const i, unsigned int const j);
+inline cv::Mat Zq(std::array<cv::Mat, TAILLE> const& Z, unsigned int const i, unsigned int const j);
 
 /**
  * @brief calcule le vecteur moyen du vecteur de paramètres pour un patch
@@ -80,7 +81,7 @@ inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z, unsigned int const i, unsigne
  *
  * @return: un vecteur moyennant tous les vecteurs z(q) du patch
  */
-inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int const r, unsigned int const i, unsigned int const j);
+inline cv::Mat MUr(std::array<cv::Mat, TAILLE> const& Z, cv::Mat const& Wr, float const& beta, unsigned int const r, unsigned int const i, unsigned int const j);
 
 /**
  * @brief calcule les matrices de covariances de toute l'image
@@ -92,7 +93,7 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float con
  *
  * @return un tableau contenant les matrices de covariance de Z(p) de chaque pixel
  */
-std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r);
+std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, TAILLE> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r);
 
 void show_descriptor(const cv::Mat& choleskyMatrix1, const std::string& nameWindow = "");
 

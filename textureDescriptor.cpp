@@ -7,7 +7,7 @@
 #include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-//#include <opencv2/contrib/contrib.hpp>
+#include <opencv2/contrib/contrib.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 
@@ -30,8 +30,8 @@ int Cholesky(cv::Mat const& A, cv::Mat & S)
 
     cv::Mat Ebis= cv::Mat::diag(E);
 
-    for(int i=0; i<8; i++){
-      for(int j=0; j<8; j++){
+    for(int i=0; i<TAILLE; i++){
+      for(int j=0; j<TAILLE; j++){
 	if(Ebis.at<float>(i,j)<0.0){
 	  Ebis.at<float>(i,j)=0.0;
 	}
@@ -73,17 +73,17 @@ int Cholesky(cv::Mat const& A, cv::Mat & S)
     transpose(S,S);
 
 
-    for(int i=0; i<8; i++){
-      for(int j=0; j<8; j++){
+    for(int i=0; i<TAILLE; i++){
+      for(int j=0; j<TAILLE; j++){
 	if(std::isnan(S.at<float>(i,j))) return 1;
       }
     }
     return 0;
 }
 
-std::array<cv::Mat, 8> Z(cv::Mat const& img)
+std::array<cv::Mat, TAILLE> Z(cv::Mat const& img)
 {
-    std::array<cv::Mat, 8> z; //return array
+    std::array<cv::Mat, TAILLE> z; //return array
 
     std::vector<cv::Mat> Lab;
     cv::split(img, Lab);
@@ -135,25 +135,25 @@ float beta(cv::Mat const& Wr)
     return 1/(float)sum(Wr)[0];
 }
 
-inline cv::Mat Zq(std::array<cv::Mat, 8> const& Z,
+inline cv::Mat Zq(std::array<cv::Mat, TAILLE> const& Z,
         unsigned int const i,
         unsigned int const j)
 {
-    cv::Mat Zq(8,1, CV_32F);
-    for(unsigned int ii = 0; ii < 8; ++ii)
+    cv::Mat Zq(TAILLE,1, CV_32F);
+    for(unsigned int ii = 0; ii < TAILLE; ++ii)
         Zq.at<float>(ii) = Z[ii].at<float>(i,j);
 
     return Zq;
 }
 
-inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
+inline cv::Mat MUr(std::array<cv::Mat, TAILLE> const& Z,
         cv::Mat const& Wr,
         float const& beta,
         unsigned int const r,
         unsigned int const i,
         unsigned int const j)
 {
-    cv::Mat mu(8,1, CV_32F);
+    cv::Mat mu(TAILLE,1, CV_32F);
 
     //mu = beta * sum[q in N] ( Wr(p,q) * z(q) )
 
@@ -177,7 +177,7 @@ inline cv::Mat MUr(std::array<cv::Mat, 8> const& Z,
     return mu;
 }
 
-std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r)
+std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, TAILLE> const& Z, cv::Mat const& Wr, float const& beta, unsigned int r)
 {
     std::cout << "Z : " << Z[0].at<float>(0,0) << std::endl;
     std::cout << "Wr : " << Wr.at<float>(0,0) << std::endl;
@@ -198,7 +198,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
             cv::Mat mu = MUr(Z, Wr, beta, r, i, j);
             //std::cout << mu << std::endl;
 
-            cv::Mat Crp = cv::Mat::zeros(8,8, CV_32F);
+            cv::Mat Crp = cv::Mat::zeros(TAILLE,TAILLE, CV_32F);
 
             for(unsigned int qi = 0; qi < 2*r+1; ++qi)
                 for(unsigned int qj = 0; qj < 2*r+1; ++qj)
@@ -231,7 +231,7 @@ std::vector<std::vector<cv::Mat> > Crp(std::array<cv::Mat, 8> const& Z, cv::Mat 
 void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindow)
 {
     cv::Mat choleskyColor;
-    applyColorMap(choleskyMatrix, choleskyColor, cv::COLORMAP_BONE);
+    cv::applyColorMap(choleskyMatrix, choleskyColor, cv::COLORMAP_BONE);
 
     namedWindow(nameWindow, cv::WINDOW_NORMAL);
     imshow(nameWindow, choleskyColor);
@@ -241,13 +241,12 @@ void show_descriptor(const cv::Mat& choleskyMatrix, const std::string& nameWindo
 
 cv::Mat matDescriptorToVector(const cv::Mat& matDescriptor)
 {
-    int d = 8;
-    int size = (d*(d+1)) /2;
+    int size = (TAILLE*(TAILLE+1)) /2;
     cv::Mat vector(size, 1, CV_32F);
 
     int indiceVector = 0;
-    for(int i=0; i<8; i++) {
-        for(int j=i; j<8; j++) {
+    for(int i=0; i<TAILLE; i++) {
+        for(int j=i; j<TAILLE; j++) {
             vector.at<float>(indiceVector, 0) = matDescriptor.at<float>(i, j);
             indiceVector++;
         }

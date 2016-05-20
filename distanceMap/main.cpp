@@ -12,7 +12,7 @@
 #include "../textureDescriptor.h"
 
 using namespace cv;
-
+const int taille = 8;
 
 void show_distance(cv::Mat& image)
 {
@@ -23,7 +23,7 @@ void show_distance(cv::Mat& image)
 
     unsigned int r = 10; //patch size
 
-    std::array<cv::Mat, 8> vecteur(Z(imageFloat));
+    std::array<cv::Mat, taille> vecteur(Z(imageFloat));
     cv::Mat wr = Wr((int)r);
     float b = beta(wr);
     std::vector<std::vector<cv::Mat> > crp = Crp(vecteur, wr, b, r);
@@ -36,8 +36,8 @@ void show_distance(cv::Mat& image)
     int jBase = 70;
     double seuil = 200;
 
-    Mat Chol1;
-    Mat sign1;
+    Mat Chol1(image.rows, image.cols, CV_8U);
+    Mat sign1(image.rows, image.cols, CV_8U);
 
 
     Cholesky(crp[iBase][jBase], Chol1);
@@ -62,7 +62,7 @@ void show_distance(cv::Mat& image)
     }
 
     imwrite("output.png", output);
-
+    std::cout<< "file saved" << std::endl;
 
 
 }
