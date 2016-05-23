@@ -7,7 +7,7 @@
 #include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/contrib/contrib.hpp>
+//#include <opencv2/contrib/contrib.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 
@@ -23,7 +23,7 @@ int Cholesky(cv::Mat const& A, cv::Mat & S)
     int dim = A.rows;
     S.create(dim, dim, CV_32F);
 
-    cv::Mat E, M; 
+    cv::Mat E, M;
     cv::eigen(A, E, M);
 
     //std::cout << "val propre A" << E << std::endl;
@@ -50,23 +50,23 @@ int Cholesky(cv::Mat const& A, cv::Mat & S)
     for(int i = 0; i < dim; i++ ){
       for(int j = 0; j < i; j++ )
 	S.at<float>(i,j) = 0.f;
-      
+
       float sum = 0.f;
       for(int k = 0; k < i; k++ )
 	{
 	  float val = S.at<float>(k,i);
 	  sum += val*val;
 	}
-      
+
       S.at<float>(i,i) = sqrt(max(Abis.at<float>(i,i) - sum, 0.f));
       float ival = 1.f/S.at<float>(i, i);
-      
+
       for(int j = i + 1; j < dim; j++ )
 	{
 	  sum = 0;
 	  for(int k = 0; k < i; k++ )
 	    sum += S.at<float>(k, i) * S.at<float>(k, j);
-	  
+
 	  S.at<float>(i, j) = (Abis.at<float>(i, j) - sum)*ival;
 	}
     }

@@ -1,6 +1,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/contrib/contrib.hpp>
+//#include <opencv2/contrib/contrib.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 #include <iostream>
@@ -18,6 +18,7 @@ void callback(int e, int x, int y, int d, void* data)
     std::vector<std::vector<cv::Mat> >* crp = (std::vector<std::vector<cv::Mat> >*)data;
     if (e == EVENT_LBUTTONDOWN ) {
         Mat output(crp->size(), (*crp)[0].size(), CV_8U);
+        Mat distances(crp->size(), (*crp)[0].size(), CV_32F);
 
         int iBase = y;
         int jBase = x;
@@ -30,6 +31,8 @@ void callback(int e, int x, int y, int d, void* data)
         Cholesky((*crp)[iBase][jBase], Chol1);
         sign1 = matDescriptorToVector(Chol1); // signature clic1
 
+        double maxDist = std::numeric_limits<double>::min();
+
         for(unsigned int i=0; i<crp->size(); i++) {
             for(unsigned int j=0; j<(*crp)[0].size(); j++) {
                 Mat Chol2, sign2;
@@ -37,7 +40,11 @@ void callback(int e, int x, int y, int d, void* data)
                 sign2 = matDescriptorToVector(Chol2); // signature clic2
                 //std::cout << "dist : " << distanceColumnVector(sign1, sign2) << std::endl;
 
-                double dist = distanceColumnVector(sign1, sign2);
+                double dist = std::abs(distanceColumnVector(sign1, sign2));
+                double printableDist = std::log(dist);
+                if(printableDist > maxDist)
+                    maxDist = printableDist;
+                distances.at<float>(i, j) = (float) printableDist;
                 if( dist < seuilDistance) {
                     output.at<uchar>(i, j) = 255;
                 }
@@ -46,9 +53,22 @@ void callback(int e, int x, int y, int d, void* data)
                 }
             }
         }
+
+        distances = distances * 1/maxDist; //on remet entre 0 et 1
+
+        Mat distance;
+        distances.convertTo(distance, CV_8UC1, 255);
+
+        Mat distanceColor;
+        cv::applyColorMap(distance, distanceColor, cv::COLORMAP_JET);
+
         std::cout << "(" << x << ", " << y << ")" << std::endl;
         imshow("dest", output);
-        imwrite("output.png", output);
+        imwrite("output"+std::to_string(x)+"_"+std::to_string(y)+".png", output);
+        imshow("distanceColor", distanceColor);
+        imwrite("distanceColor"+std::to_string(x)+"_"+std::to_string(y)+".png", distanceColor);
+        imshow("distance", distance);
+        imwrite("distance"+std::to_string(x)+"_"+std::to_string(y)+".png", distance);
     }
 }
 void show_distance(cv::Mat& image)
@@ -98,7 +118,7 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    string name(argv[1]);
+    std::string name(argv[1]);
 
     Mat image;
     image = imread(name, CV_LOAD_IMAGE_COLOR);   // Read the file
