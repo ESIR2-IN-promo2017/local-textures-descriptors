@@ -21,7 +21,7 @@ void callback(int e, int x, int y, int d, void* data)
 
         int iBase = y;
         int jBase = x;
-        double seuilDistance = 180;
+        double seuilDistance = 150;
 
         Mat Chol1;
         Mat sign1;
@@ -29,8 +29,6 @@ void callback(int e, int x, int y, int d, void* data)
 
         Cholesky((*crp)[iBase][jBase], Chol1);
         sign1 = matDescriptorToVector(Chol1); // signature clic1
-
-        const int TAILLE = 8;
 
         for(unsigned int i=0; i<crp->size(); i++) {
             for(unsigned int j=0; j<(*crp)[0].size(); j++) {
@@ -48,6 +46,7 @@ void callback(int e, int x, int y, int d, void* data)
                 }
             }
         }
+        std::cout << "(" << x << ", " << y << ")" << std::endl;
         imshow("dest", output);
         imwrite("output.png", output);
     }
