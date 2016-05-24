@@ -1,6 +1,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-//#include <opencv2/contrib/contrib.hpp>
+#include <opencv2/contrib/contrib.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 #include <iostream>
@@ -8,7 +8,6 @@
 #include <limits>
 #include <numeric>
 #include <vector>
-
 #include "../textureDescriptor.h"
 
 using namespace cv;
@@ -78,7 +77,7 @@ void show_distance(cv::Mat& image)
     imageLab.convertTo(imageFloat, CV_32FC3, 1.0, 0.0);
 
 
-    unsigned int r = 10; //patch size
+    unsigned int r = 5; //patch size
 
     std::array<cv::Mat, TAILLE> vecteur(Z(imageFloat));
     cv::Mat wr = Wr((int)r);

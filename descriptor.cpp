@@ -7,7 +7,7 @@
  */
 
 #include "descriptor.h"
-const int TAILLE = 8;
+const int TAILLE = 12;
 
 float getPixel(cv::Mat const& mat, long i, long j)
 {
@@ -208,10 +208,14 @@ void Descriptor::calculVecteurAttributs()
         Lab[channel] = cv::Mat(m_img.rows, m_img.cols, CV_32F);
     cv::split(m_img, Lab);
 
-    cv::Mat dLdx, dLdy, d2Ldx2, d2Ldy2, d2Ldxdy;
+    cv::Mat dLdx, dLdy, dadx, dady, dbdx, dbdy, d2Ldx2, d2Ldy2, d2Ldxdy;
 
     cv::Sobel(Lab[0], dLdx, CV_32F, 1, 0, CV_SCHARR);
     cv::Sobel(Lab[0], dLdy, CV_32F, 0, 1, CV_SCHARR);
+    cv::Sobel(Lab[1], dadx, CV_32F, 1, 0, CV_SCHARR);
+    cv::Sobel(Lab[1], dady, CV_32F, 0, 1, CV_SCHARR);
+    cv::Sobel(Lab[2], dbdx, CV_32F, 1, 0, CV_SCHARR);
+    cv::Sobel(Lab[2], dbdy, CV_32F, 0, 1, CV_SCHARR);
     cv::Sobel(Lab[0], d2Ldx2, CV_32F, 2, 0);
     cv::Sobel(Lab[0], d2Ldy2, CV_32F, 0, 2);
     cv::Sobel(Lab[0], d2Ldxdy, CV_32F, 1, 1);
@@ -221,6 +225,10 @@ void Descriptor::calculVecteurAttributs()
     m_attribVector.push_back(abs(Lab[2]));
     m_attribVector.push_back(abs(dLdx));
     m_attribVector.push_back(abs(dLdy));
+    m_attribVector.push_back(abs(dadx));
+    m_attribVector.push_back(abs(dady));
+    m_attribVector.push_back(abs(dbdx));
+    m_attribVector.push_back(abs(dbdy));
     m_attribVector.push_back(abs(d2Ldx2));
     m_attribVector.push_back(abs(d2Ldy2));
     m_attribVector.push_back(abs(d2Ldxdy));

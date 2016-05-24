@@ -1,5 +1,5 @@
 CC=g++
-LIBS= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs #-lopencv_contrib
+LIBS= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_contrib #-lopencv_imgcodecs
 FLAGS= -std=c++11 -Wall -Os
 PROJECT_NAME=distanceMap.out
 

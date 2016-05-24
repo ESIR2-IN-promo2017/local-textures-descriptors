@@ -7,7 +7,7 @@
 #include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-//#include <opencv2/contrib/contrib.hpp>
+#include <opencv2/contrib/contrib.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 
@@ -90,10 +90,14 @@ std::array<cv::Mat, TAILLE> Z(cv::Mat const& img)
 
     cv::Mat L(Lab[0]), a(Lab[1]), b(Lab[2]);
 
-    cv::Mat dLdx, dLdy, d2Ldx2, d2Ldy2, d2Ldxdy;
+    cv::Mat dLdx, dLdy, dadx, dady, dbdx, dbdy, d2Ldx2, d2Ldy2, d2Ldxdy;
 
     cv::Sobel(L, dLdx, CV_32F, 1, 0, CV_SCHARR);
     cv::Sobel(L, dLdy, CV_32F, 0, 1, CV_SCHARR);
+    cv::Sobel(a, dadx, CV_32F, 1, 0, CV_SCHARR);
+    cv::Sobel(a, dady, CV_32F, 0, 1, CV_SCHARR);
+    cv::Sobel(b, dbdx, CV_32F, 1, 0, CV_SCHARR);
+    cv::Sobel(b, dbdy, CV_32F, 0, 1, CV_SCHARR);
     cv::Sobel(L, d2Ldx2, CV_32F, 2, 0);
     cv::Sobel(L, d2Ldy2, CV_32F, 0, 2);
     cv::Sobel(L, d2Ldxdy, CV_32F, 1, 1);
@@ -103,9 +107,13 @@ std::array<cv::Mat, TAILLE> Z(cv::Mat const& img)
     z[2] = abs(b);
     z[3] = abs(dLdx);
     z[4] = abs(dLdy);
-    z[5] = abs(d2Ldx2);
-    z[6] = abs(d2Ldy2);
-    z[7] = abs(d2Ldxdy);
+    z[5] = abs(dadx);
+    z[6] = abs(dady);
+    z[7] = abs(dbdx);
+    z[8] = abs(dbdy);
+    z[9] = abs(d2Ldx2);
+    z[10] = abs(d2Ldy2);
+    z[11] = abs(d2Ldxdy);
 
     return z;
 }
